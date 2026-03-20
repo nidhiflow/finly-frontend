@@ -119,7 +119,7 @@ export default function Signup() {
         <div className="auth-container">
             <div className="auth-card slide-up">
                 <div className="auth-brand">
-                    <div className="auth-brand-icon">F</div>
+                    <img src="/finly-logo.png" alt="Finly" className="auth-brand-logo" />
                     <h1>Finly</h1>
                     <p>{step === 1 ? 'Start tracking your finances today' : 'Verify your email'}</p>
                 </div>

@@ -8,15 +8,15 @@
   "theme_color": "#4f46e5",
   "icons": [
     {
-      "src": "/finly-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/finly-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/finly-mask-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/finly-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "maskable"
     }
   ]

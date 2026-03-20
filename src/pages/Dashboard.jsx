@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, TrendingDown, Wallet, Plus, ChevronLeft, ChevronRight, Calendar, Repeat, Sparkles, AlertTriangle, X, Target, Tag, ArrowRight, Clock3, Landmark } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { TrendingUp, TrendingDown, Wallet, Plus, ChevronLeft, ChevronRight, Calendar, Repeat, Sparkles, AlertTriangle, X, Target, Tag, ArrowRight, Clock3, Landmark, ChevronDown } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { statsAPI, transactionsAPI, accountsAPI, budgetsAPI, savingsGoalsAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { getBudgetAlerts } from '../utils/budgetAlerts';
@@ -43,6 +43,7 @@ export default function Dashboard() {
         }
     });
     const [loading, setLoading] = useState(true);
+    const [mobileInsightsOpen, setMobileInsightsOpen] = useState(true);
     const { addToast, formatCurrency } = useApp();
     const navigate = useNavigate();
 
@@ -384,6 +385,45 @@ export default function Dashboard() {
         },
     ];
 
+    const mobileChartData = trendData.map(d => ({
+        ...d,
+        net: (d.income || 0) - (d.expense || 0),
+    }));
+    const trendColor = summary.income > summary.expense ? '#10b981'
+        : summary.expense > summary.income ? '#ef4444' : '#8b5cf6';
+
+    const mobileMotivation = (() => {
+        if (summary.income === 0 && summary.expense === 0) return { text: 'Start tracking to see your progress', emoji: '📊' };
+        if (summary.balance >= summary.income * 0.3) return { text: "You're doing great this month", emoji: '👍' };
+        if (summary.balance >= 0) return { text: 'Stay on track, you got this', emoji: '💪' };
+        return { text: "Let's tighten spending this month", emoji: '🎯' };
+    })();
+
+    const mobileInsightItems = [];
+    if (insights?.topCategory) {
+        mobileInsightItems.push({
+            icon: '⚠️',
+            text: `${insights.topCategory.icon || ''} ${insights.topCategory.name} takes ${insights.topCategory.pct}% of spending`,
+            sub: 'Your highest expense category this period',
+        });
+    }
+    if (insights?.expenseChange !== undefined && insights.expenseChange !== 0) {
+        const pct = Math.abs(Math.round(insights.expenseChange));
+        mobileInsightItems.push({
+            icon: insights.expenseChange > 0 ? '📈' : '📉',
+            text: `Your spending ${insights.expenseChange > 0 ? 'increased' : 'decreased'} ${pct}% vs last month`,
+            sub: insights.expenseChange > 0 ? 'Consider reviewing your budget categories' : 'Great progress, keep it up',
+        });
+    }
+    if (summary.income > summary.expense && summary.expense > 0) {
+        const canSave = summary.income - summary.expense;
+        mobileInsightItems.push({
+            icon: '💰',
+            text: `You can save ${formatCurrency(canSave)} this month if trend continues`,
+            sub: 'Keep up the good habits',
+        });
+    }
+
     if (loading) return <div className="loading-spinner" />;
 
     return (
@@ -450,73 +490,123 @@ export default function Dashboard() {
 
             {isMobile ? (
                 <div className="dashboard-mobile-home">
-                    <div className="card hero-panel snapshot-panel">
-                        <div className="hero-panel-head">
-                            <div>
-                                <div className="dashboard-section-kicker">Money Home</div>
-                                <div className="hero-panel-title">Everything important for {currentPeriodLabel}</div>
+                    {/* Compact month navigation */}
+                    <div className="mobile-month-nav">
+                        <button className="btn btn-ghost btn-sm btn-icon" onClick={prevMonth}><ChevronLeft size={16} /></button>
+                        <button className="mobile-month-label" onClick={goToToday}>{formatMonth(currentMonth)}</button>
+                        <button className="btn btn-ghost btn-sm btn-icon" onClick={nextMonth}><ChevronRight size={16} /></button>
+                    </div>
+
+                    {/* Hero Balance Card */}
+                    <div className="mobile-hero-card">
+                        <div className="mobile-hero-top">
+                            <div className="mobile-hero-left">
+                                <div className="mobile-hero-balance">{formatCurrency(summary.balance)}</div>
+                                <div className="mobile-hero-message">{mobileMotivation.text} {mobileMotivation.emoji}</div>
+                                <div className="mobile-hero-pills">
+                                    <span className="mobile-hero-pill income">
+                                        <TrendingUp size={13} /> +{formatCurrency(summary.income)}
+                                    </span>
+                                    <span className="mobile-hero-pill expense">
+                                        — -{formatCurrency(summary.expense)}
+                                    </span>
+                                </div>
                             </div>
-                            {finlyScore && filterMode === 'month' && (
-                                <span className="score-pill" style={{ background: `${scoreColor}22`, color: scoreColor }}>
-                                    {clampedScore}/100
-                                </span>
+                            {mobileChartData.length > 1 && (
+                                <div className="mobile-hero-chart-area">
+                                    <ResponsiveContainer width="100%" height={80}>
+                                        <AreaChart data={mobileChartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+                                            <defs>
+                                                <linearGradient id="mobileHeroGrad" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor={trendColor} stopOpacity={0.4} />
+                                                    <stop offset="100%" stopColor={trendColor} stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <Area
+                                                type="monotone"
+                                                dataKey="net"
+                                                stroke={trendColor}
+                                                strokeWidth={2}
+                                                fill="url(#mobileHeroGrad)"
+                                                dot={false}
+                                                isAnimationActive={true}
+                                                animationDuration={800}
+                                                animationEasing="ease-out"
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
                             )}
                         </div>
-                        <div className="dashboard-mini-metrics">
-                            <div className="mini-metric">
-                                <span className="mini-metric-label">Avg daily spend</span>
-                                <strong>{avgDailyExpense > 0 ? formatCurrency(avgDailyExpense) : formatCurrency(0)}</strong>
-                            </div>
-                            <div className="mini-metric">
-                                <span className="mini-metric-label">Budget alerts</span>
-                                <strong>{budgetAlertCount}</strong>
-                            </div>
-                            <div className="mini-metric">
-                                <span className="mini-metric-label">Net worth</span>
-                                <strong>{formatCurrency(totalNetWorth)}</strong>
-                            </div>
-                        </div>
-                        <div className="hero-panel-actions">
-                            <button className="btn btn-primary btn-sm" onClick={() => navigate('/add')}><Plus size={14} /> Add</button>
-                            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/charts')}>Reports</button>
-                            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/transactions')}>Ledger</button>
-                        </div>
+                        <button className="mobile-hero-chart-link" onClick={() => navigate('/charts')}>
+                            Last 7 days <ChevronRight size={12} />
+                        </button>
                     </div>
 
-                    <div className="dashboard-planner-grid">
-                        {plannerCards.map((card) => {
-                            const Icon = card.icon;
-                            return (
-                                <button key={card.key} type="button" className={`planner-card ${card.tone || 'neutral'}`} onClick={card.action}>
-                                    <div className="planner-card-top">
-                                        <span className="planner-card-icon"><Icon size={18} /></span>
-                                        <span className="planner-card-label">{card.label}</span>
-                                    </div>
-                                    <div className="planner-card-value">{card.value}</div>
-                                    <div className="planner-card-note">{card.note}</div>
-                                </button>
-                            );
-                        })}
+                    {/* Smart Insights */}
+                    {mobileInsightItems.length > 0 && isCurrentMonthView && (
+                        <div className="card mobile-insights-card">
+                            <button type="button" className="mobile-insights-toggle" onClick={() => setMobileInsightsOpen(!mobileInsightsOpen)}>
+                                <span className="mobile-insights-title">Smart Insights</span>
+                                <ChevronDown size={18} className={`mobile-insights-chevron ${mobileInsightsOpen ? 'open' : ''}`} />
+                            </button>
+                            {mobileInsightsOpen && (
+                                <div className="mobile-insights-list">
+                                    {mobileInsightItems.map((item, i) => (
+                                        <div key={i} className="mobile-insight-item">
+                                            <span className="mobile-insight-icon">{item.icon}</span>
+                                            <div>
+                                                <div className="mobile-insight-text">{item.text}</div>
+                                                <div className="mobile-insight-sub">{item.sub}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <button type="button" className="mobile-insight-link" onClick={() => navigate('/charts')}>
+                                        Where did my money go? <ArrowRight size={14} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Quick Action Buttons */}
+                    <div className="mobile-quick-actions">
+                        <button className="mobile-quick-btn expense" onClick={() => navigate('/add')}>
+                            <Plus size={15} /> Expense
+                        </button>
+                        <button className="mobile-quick-btn income" onClick={() => navigate('/add')}>
+                            <Plus size={15} /> Income
+                        </button>
+                        <button className="mobile-quick-btn transfer" onClick={() => navigate('/add')}>
+                            <Plus size={15} /> Transfer
+                        </button>
                     </div>
 
-                    <div className="card dashboard-list-card">
-                        <div className="card-header">
-                            <div>
-                                <div className="card-title">Recent transactions</div>
-                                <div className="card-subtitle">The latest activity, without the long dashboard scroll.</div>
-                            </div>
-                            <button className="btn btn-ghost btn-sm dashboard-card-action" onClick={() => navigate('/transactions')}>View all</button>
+                    {/* Recent Transactions */}
+                    <div className="card mobile-tx-card">
+                        <div className="mobile-tx-header">
+                            <span className="mobile-tx-title">Recent transactions</span>
+                            <button type="button" className="mobile-tx-viewall" onClick={() => navigate('/transactions')}>
+                                View All <ChevronRight size={13} />
+                            </button>
+                        </div>
+                        <div className="mobile-tx-flow">
+                            <span className="flow-item income">{formatCurrency(summary.income)}</span>
+                            <span className="flow-arrow">→</span>
+                            <span className="flow-item expense">{formatCurrency(summary.expense)}</span>
+                            <span className="flow-arrow">→</span>
+                            <span className="flow-item balance">{formatCurrency(summary.balance)}</span>
                         </div>
                         {recentTx.length > 0 ? (
                             <div className="tx-list">
-                                {recentTx.slice(0, 4).map(tx => (
+                                {recentTx.slice(0, 5).map(tx => (
                                     <div key={tx.id} className="tx-item" onClick={() => navigate(`/add?edit=${tx.id}`)}>
                                         <div className="tx-icon" style={{ background: tx.category_color ? `${tx.category_color}20` : 'var(--bg-input)' }}>
                                             {tx.category_icon || (tx.type === 'income' ? '💰' : '💸')}
                                         </div>
                                         <div className="tx-info">
                                             <div className="tx-category">{tx.category_name || tx.type}</div>
-                                            <div className="tx-note">{tx.note || tx.date}</div>
+                                            <div className="tx-note">{tx.note || new Date(tx.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}</div>
                                         </div>
                                         <div className="tx-amount-col">
                                             <div className={`tx-amount ${tx.type}`}>
@@ -537,27 +627,21 @@ export default function Dashboard() {
                         )}
                     </div>
 
-                    <div className="card dashboard-list-card">
-                        <div className="card-header">
-                            <div>
-                                <div className="card-title">Accounts and plans</div>
-                                <div className="card-subtitle">Jump straight into the next screen that matters.</div>
-                            </div>
-                        </div>
-                        <div className="dashboard-chip-list">
-                            <button type="button" className="dashboard-data-chip" onClick={() => navigate('/accounts')}>
-                                <span>{visibleAccounts.length} accounts</span>
-                            </button>
-                            <button type="button" className="dashboard-data-chip" onClick={() => navigate('/budget')}>
-                                <span>{budgets.length} budgets</span>
-                            </button>
-                            <button type="button" className="dashboard-data-chip" onClick={() => navigate('/goals')}>
-                                <span>{topGoal ? `${Math.round((topGoal.ratio || 0) * 100)}% top goal` : 'Goals'}</span>
-                            </button>
-                            <button type="button" className="dashboard-data-chip" onClick={() => navigate('/charts')}>
-                                <span>Open analytics</span>
-                            </button>
-                        </div>
+                    {/* Planner Cards */}
+                    <div className="dashboard-planner-grid">
+                        {plannerCards.map((card) => {
+                            const Icon = card.icon;
+                            return (
+                                <button key={card.key} type="button" className={`planner-card ${card.tone || 'neutral'}`} onClick={card.action}>
+                                    <div className="planner-card-top">
+                                        <span className="planner-card-icon"><Icon size={18} /></span>
+                                        <span className="planner-card-label">{card.label}</span>
+                                    </div>
+                                    <div className="planner-card-value">{card.value}</div>
+                                    <div className="planner-card-note">{card.note}</div>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             ) : (

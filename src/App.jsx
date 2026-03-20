@@ -888,7 +888,7 @@ function AppLayout() {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <div className="sidebar-brand-icon">{user?.name?.[0]?.toUpperCase() || 'F'}</div>
+          <img src="/finly-logo.png" alt="Finly" className="sidebar-brand-logo" />
           <div>
             <div className="sidebar-brand-text">Finly</div>
             <div className="sidebar-brand-subtitle">Money clarity, every day</div>
@@ -974,7 +974,7 @@ function AppLayout() {
       <aside className={`mobile-sidebar ${mobileNavOpen ? 'open' : ''}`}>
         <div className="mobile-sidebar-header">
           <div className="mobile-sidebar-brand">
-            <div className="sidebar-brand-icon">{user?.name?.[0]?.toUpperCase() || 'F'}</div>
+            <img src="/finly-logo.png" alt="Finly" className="sidebar-brand-logo" />
             <div>
               <div className="mobile-sidebar-title">Finly</div>
               <div className="mobile-sidebar-subtitle">{user?.name ? `${user.name}'s workspace` : 'Reports, setup, and tools'}</div>

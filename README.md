@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/finly-icon.svg" alt="Finly Logo" width="80" height="80" />
+  <img src="public/finly-logo.png" alt="Finly Logo" width="120" height="120" style="border-radius: 16px;" />
 </p>
 
 <h1 align="center">Finly Frontend</h1>
