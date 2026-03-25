@@ -1,7 +1,32 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit3, Trash2, ChevronDown, ChevronRight, Wallet, TrendingUp, TrendingDown, ArrowRight, Landmark, PiggyBank } from 'lucide-react';
-import { accountsAPI } from '../services/api';
+import { Plus, Edit3, Trash2, ChevronDown, ChevronRight, Wallet, TrendingUp, TrendingDown, ArrowRight, Landmark, PiggyBank, Search } from 'lucide-react';
+import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { accountsAPI, statsAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
+import { useIsMobile } from '../hooks/useIsMobile';
+import BANK_LOGOS, { getBankById } from '../data/bankLogos';
+
+function BankLogo({ bank, size = 44 }) {
+    if (!bank) return null;
+    if (bank.isEmoji) {
+        return (
+            <div className="bank-logo" style={{ width: size, height: size, background: `${bank.color}22`, fontSize: size * 0.5 }}>
+                {bank.abbr}
+            </div>
+        );
+    }
+    return (
+        <div className="bank-logo" style={{ width: size, height: size, background: bank.color, color: bank.textColor, fontSize: size * 0.26 }}>
+            {bank.abbr}
+        </div>
+    );
+}
+
+function AccountIcon({ icon, size = 44 }) {
+    const bank = getBankById(icon);
+    if (bank) return <BankLogo bank={bank} size={size} />;
+    return <div className="account-card-icon">{icon}</div>;
+}
 
 const DEFAULT_ACCOUNT_TYPES = [
     { value: 'bank_account', label: 'Bank account', icon: '🏦' },
@@ -39,7 +64,11 @@ export default function Accounts() {
     const [subParentId, setSubParentId] = useState(null);
     const [editingSub, setEditingSub] = useState(null);
     const [subForm, setSubForm] = useState({ name: '', type: 'upi' });
+    const [bankSearch, setBankSearch] = useState('');
+    const [showBankPicker, setShowBankPicker] = useState(false);
+    const [trendData, setTrendData] = useState([]);
     const { addToast, formatCurrency } = useApp();
+    const isMobile = useIsMobile();
 
     const accountTypes = [...DEFAULT_ACCOUNT_TYPES, ...customTypes];
     const subcategoryTypes = [...DEFAULT_SUBCATEGORY_TYPES, ...customSubcategories];
@@ -47,9 +76,23 @@ export default function Accounts() {
     useEffect(() => { loadAccounts(); }, []);
 
     const loadAccounts = async () => {
-        try { setAccounts(await accountsAPI.list()); }
-        catch { addToast('Failed to load accounts', 'error'); }
-        finally { setLoading(false); }
+        try {
+            const accs = await accountsAPI.list();
+            setAccounts(accs);
+            const now = new Date();
+            const start = new Date(now.getFullYear(), now.getMonth(), 1);
+            const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const trend = await statsAPI.trend({
+                startDate: start.toISOString().split('T')[0],
+                endDate: end.toISOString().split('T')[0],
+                groupBy: 'day',
+            }).catch(() => []);
+            setTrendData((trend || []).slice(-7).map(d => ({ ...d, net: (d.income || 0) - (d.expense || 0) })));
+        } catch {
+            addToast('Failed to load accounts', 'error');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const mainAccounts = accounts.filter(a => !a.parent_id);
@@ -130,8 +173,10 @@ export default function Accounts() {
             }
             setShowModal(false);
             setEditingAcc(null);
-            setForm({ name: '', type: 'cash', balance: 0, icon: '💵', color: '#3498DB' });
+            setForm({ name: '', type: 'cash', balance: 0, icon: 'generic_cash', color: '#22c55e' });
             setBalanceInput('');
+            setBankSearch('');
+            setShowBankPicker(false);
             loadAccounts();
         } catch (err) { addToast(err.message, 'error'); }
     };
@@ -145,10 +190,21 @@ export default function Accounts() {
         } catch (err) { addToast(err.message, 'error'); }
     };
 
+    const openAdd = () => {
+        setEditingAcc(null);
+        setForm({ name: '', type: 'cash', balance: 0, icon: 'generic_cash', color: '#22c55e' });
+        setBalanceInput('');
+        setBankSearch('');
+        setShowBankPicker(false);
+        setShowModal(true);
+    };
+
     const openEdit = (acc) => {
         setEditingAcc(acc);
         setForm({ name: acc.name, type: acc.type, balance: acc.balance, icon: acc.icon, color: acc.color });
         setBalanceInput(acc.balance != null && acc.balance !== '' ? String(acc.balance) : '');
+        setBankSearch('');
+        setShowBankPicker(false);
         setShowModal(true);
     };
 
@@ -205,8 +261,96 @@ export default function Accounts() {
 
     if (loading) return <div className="loading-spinner" />;
 
+    const heroChartColor = totalNetWorth >= 0 ? '#10b981' : '#ef4444';
+
     return (
         <div className="fade-in page-stack accounts-page">
+            {isMobile ? (
+                <div className="mobile-accounts-home">
+                    <div className="mobile-accounts-header">
+                        <div>
+                            <div className="dashboard-section-kicker" style={{ color: 'var(--accent-secondary)' }}>Accounts</div>
+                            <div className="dashboard-section-title">Where your money lives</div>
+                            <div className="dashboard-section-note">Track bank accounts, savings, cash, cards, and grouped sub-accounts in one place.</div>
+                        </div>
+                        <button className="btn btn-primary btn-sm" onClick={openAdd}>
+                            <Plus size={16} /> Add Account
+                        </button>
+                    </div>
+
+                    <div className="mobile-hero-card">
+                        <div className="mobile-hero-top">
+                            <div className="mobile-hero-left">
+                                <div className="mobile-hero-label">NET WORTH</div>
+                                <div className="mobile-hero-balance">{formatCurrency(totalNetWorth)}</div>
+                                <div className="mobile-hero-message" style={{ marginBottom: 0 }}>
+                                    {mainAccounts.length} primary account{mainAccounts.length !== 1 ? 's' : ''} across assets, savings, cash, cards, and liabilities.
+                                </div>
+                            </div>
+                            {trendData.length > 1 && (
+                                <div className="mobile-hero-chart-area">
+                                    <ResponsiveContainer width="100%" height={80}>
+                                        <AreaChart data={trendData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+                                            <defs>
+                                                <linearGradient id="accHeroGrad" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor={heroChartColor} stopOpacity={0.4} />
+                                                    <stop offset="100%" stopColor={heroChartColor} stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <Area type="monotone" dataKey="net" stroke={heroChartColor} strokeWidth={2}
+                                                fill="url(#accHeroGrad)" dot={false} isAnimationActive animationDuration={800} animationEasing="ease-out" />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            )}
+                        </div>
+                        <button className="mobile-hero-chart-link" onClick={() => {}}>
+                            Last 7 days <ChevronRight size={12} />
+                        </button>
+                    </div>
+
+                    <div className="mobile-tx-flow">
+                        <span className="flow-item income"><Landmark size={13} /> ASSETS {formatCurrency(totalAssets)}</span>
+                        <span className="flow-arrow">→</span>
+                        <span className="flow-item expense">{formatCurrency(totalLiabilities)}</span>
+                        <span className="flow-arrow">→</span>
+                        <span className="flow-item balance">{formatCurrency(totalNetWorth)}</span>
+                    </div>
+
+                    <div className="mobile-accounts-list">
+                        {mainAccounts.length === 0 ? (
+                            <div className="card" style={{ padding: 32, textAlign: 'center' }}>
+                                <div style={{ fontSize: 48, marginBottom: 12 }}>🏦</div>
+                                <h3>No accounts yet</h3>
+                                <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Add your first account to start tracking.</p>
+                                <button className="btn btn-primary btn-sm" onClick={openAdd} style={{ marginTop: 16 }}>
+                                    <Plus size={16} /> Add Account
+                                </button>
+                            </div>
+                        ) : mainAccounts.map(acc => {
+                            const balanceValue = parseFloat(acc.balance || 0) || 0;
+                            const typeLabel = accountTypes.find(t => t.value === acc.type)?.label || acc.type.replace('_', ' ');
+                            return (
+                                <button key={acc.id} type="button" className="mobile-account-row" onClick={() => openEdit(acc)}>
+                                    <AccountIcon icon={acc.icon} size={44} />
+                                    <div className="mobile-account-info">
+                                        <div className="mobile-account-name">{acc.name}</div>
+                                        <div className="mobile-account-type">{typeLabel}</div>
+                                    </div>
+                                    <div className="mobile-account-right">
+                                        <div className={`mobile-account-balance ${balanceValue >= 0 ? 'positive' : 'negative'}`}>
+                                            {formatCurrency(acc.balance)}
+                                        </div>
+                                        <div className="mobile-account-tag">{typeLabel}</div>
+                                    </div>
+                                    <ChevronRight size={18} className="mobile-account-chevron" />
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            ) : (
+            <>
             <div className="card page-toolbar-card">
                 <div className="page-toolbar-header">
                     <div>
@@ -214,7 +358,7 @@ export default function Accounts() {
                         <div className="dashboard-section-title">Where your money lives</div>
                         <div className="dashboard-section-note">Track bank accounts, savings, cash, cards, and grouped sub-accounts in one place.</div>
                     </div>
-                    <button className="btn btn-primary btn-sm" onClick={() => { setEditingAcc(null); setForm({ name: '', type: 'cash', balance: 0, icon: '💵', color: '#3498DB' }); setBalanceInput(''); setShowModal(true); }}>
+                    <button className="btn btn-primary btn-sm" onClick={openAdd}>
                         <Plus size={16} /> Add Account
                     </button>
                 </div>
@@ -271,7 +415,7 @@ export default function Accounts() {
                     <div className="dashboard-section-title">Your accounts and sub-accounts</div>
                     <div className="dashboard-section-note">Review balances, expand bank account channels, and manage each money bucket from one place.</div>
                 </div>
-                <button className="btn btn-ghost btn-sm" onClick={() => { setEditingAcc(null); setForm({ name: '', type: 'cash', balance: 0, icon: '💵', color: '#3498DB' }); setBalanceInput(''); setShowModal(true); }}>
+                <button className="btn btn-ghost btn-sm" onClick={openAdd}>
                     Add another account <ArrowRight size={14} />
                 </button>
             </div>
@@ -282,7 +426,7 @@ export default function Accounts() {
                         <div className="empty-state-icon" style={{ fontSize: 48, marginBottom: 12 }}>🏦</div>
                         <h3>No accounts yet</h3>
                         <p>Add your first account to start tracking.</p>
-                        <button className="btn btn-primary" onClick={() => { setEditingAcc(null); setForm({ name: '', type: 'cash', balance: 0, icon: '💵', color: '#3498DB' }); setBalanceInput(''); setShowModal(true); }} style={{ marginTop: 16 }}>
+                        <button className="btn btn-primary" onClick={openAdd} style={{ marginTop: 16 }}>
                             <Plus size={18} /> Add Account
                         </button>
                     </div>
@@ -296,7 +440,7 @@ export default function Accounts() {
                         <div key={acc.id} className="account-card">
                             <div className="account-card-header">
                                 <div className="account-card-icon-wrap">
-                                    <div className="account-card-icon">{acc.icon}</div>
+                                    <AccountIcon icon={acc.icon} size={44} />
                                     <div>
                                         <div className="account-card-name">{acc.name}</div>
                                         <div className="account-card-type">{typeLabel}</div>
@@ -349,6 +493,8 @@ export default function Accounts() {
                     );
                 })}
             </div>
+            </>
+            )}
 
             {/* Add/Edit Account Modal */}
             {showModal && (
@@ -365,14 +511,54 @@ export default function Accounts() {
                                     <input className="input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required placeholder="e.g. HDFC or My Wallet" />
                                 </div>
                                 <div className="input-group">
+                                    <label className="input-label">Bank / Logo</label>
+                                    <button type="button" className="bank-logo-trigger" onClick={() => setShowBankPicker(!showBankPicker)}>
+                                        <AccountIcon icon={form.icon} size={32} />
+                                        <span>{getBankById(form.icon)?.name || 'Select a bank or icon'}</span>
+                                        <ChevronDown size={16} className={showBankPicker ? 'rotated' : ''} />
+                                    </button>
+                                    {showBankPicker && (
+                                        <div className="bank-logo-picker">
+                                            <div className="bank-logo-search">
+                                                <Search size={15} />
+                                                <input
+                                                    className="input"
+                                                    placeholder="Search banks..."
+                                                    value={bankSearch}
+                                                    onChange={e => setBankSearch(e.target.value)}
+                                                    autoFocus
+                                                />
+                                            </div>
+                                            <div className="bank-logo-grid">
+                                                {BANK_LOGOS
+                                                    .filter(b => b.name.toLowerCase().includes(bankSearch.toLowerCase()) || b.abbr.toLowerCase().includes(bankSearch.toLowerCase()))
+                                                    .map(b => (
+                                                        <button
+                                                            key={b.id}
+                                                            type="button"
+                                                            className={`bank-logo-option ${form.icon === b.id ? 'selected' : ''}`}
+                                                            onClick={() => {
+                                                                setForm(f => ({ ...f, icon: b.id, color: b.color }));
+                                                                setShowBankPicker(false);
+                                                                setBankSearch('');
+                                                            }}
+                                                        >
+                                                            <BankLogo bank={b} size={38} />
+                                                            <span className="bank-logo-option-name">{b.name}</span>
+                                                        </button>
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="input-group">
                                     <label className="input-label">Type</label>
                                     <select className="input" value={form.type} onChange={e => {
                                         if (e.target.value === '__add_type__') {
                                             setShowAddType(true);
                                             return;
                                         }
-                                        const t = accountTypes.find(at => at.value === e.target.value);
-                                        setForm(f => ({ ...f, type: e.target.value, icon: t?.icon || f.icon }));
+                                        setForm(f => ({ ...f, type: e.target.value }));
                                     }}>
                                         {accountTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                                         <option value="__add_type__">+ Add Type</option>
