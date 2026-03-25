@@ -1,5 +1,5 @@
 const BANK_LOGOS = [
-    // Indian Public Sector Banks
+    // Indian Public Sector Banks (add /public/bank-logos/{id}.svg for full-color marks)
     { id: 'sbi', name: 'State Bank of India', abbr: 'SBI', color: '#22409A', textColor: '#fff' },
     { id: 'pnb', name: 'Punjab National Bank', abbr: 'PNB', color: '#D71920', textColor: '#fff' },
     { id: 'bob', name: 'Bank of Baroda', abbr: 'BOB', color: '#F47920', textColor: '#fff' },
@@ -13,10 +13,10 @@ const BANK_LOGOS = [
     { id: 'psb', name: 'Punjab & Sind Bank', abbr: 'PSB', color: '#8B0000', textColor: '#fff' },
     { id: 'maha', name: 'Bank of Maharashtra', abbr: 'BOM', color: '#006838', textColor: '#fff' },
 
-    // Indian Private Banks
-    { id: 'hdfc', name: 'HDFC Bank', abbr: 'HDFC', color: '#004B87', textColor: '#fff' },
-    { id: 'icici', name: 'ICICI Bank', abbr: 'ICICI', color: '#F37A21', textColor: '#fff' },
-    { id: 'axis', name: 'Axis Bank', abbr: 'AXIS', color: '#800020', textColor: '#fff' },
+    // Indian Private Banks — SVGs from simple-icons (CC0), hosted under /bank-logos/
+    { id: 'hdfc', name: 'HDFC Bank', abbr: 'HDFC', color: '#004B87', textColor: '#fff', logoSrc: '/bank-logos/hdfc.svg' },
+    { id: 'icici', name: 'ICICI Bank', abbr: 'ICICI', color: '#F37A21', textColor: '#fff', logoSrc: '/bank-logos/icici.svg' },
+    { id: 'axis', name: 'Axis Bank', abbr: 'AXIS', color: '#800020', textColor: '#fff', logoSrc: '/bank-logos/axis.svg' },
     { id: 'kotak', name: 'Kotak Mahindra Bank', abbr: 'KMB', color: '#ED1C24', textColor: '#fff' },
     { id: 'yes', name: 'Yes Bank', abbr: 'YES', color: '#003B70', textColor: '#fff' },
     { id: 'indusind', name: 'IndusInd Bank', abbr: 'IIB', color: '#8B1A1A', textColor: '#fff' },
@@ -35,24 +35,24 @@ const BANK_LOGOS = [
     { id: 'nainital', name: 'Nainital Bank', abbr: 'NB', color: '#0066B3', textColor: '#fff' },
 
     // Payment Banks & Neo Banks
-    { id: 'paytm', name: 'Paytm Payments Bank', abbr: 'PTM', color: '#00BAF2', textColor: '#fff' },
-    { id: 'airtel', name: 'Airtel Payments Bank', abbr: 'APB', color: '#ED1C24', textColor: '#fff' },
+    { id: 'paytm', name: 'Paytm Payments Bank', abbr: 'PTM', color: '#00BAF2', textColor: '#fff', logoSrc: '/bank-logos/paytm.svg' },
+    { id: 'airtel', name: 'Airtel Payments Bank', abbr: 'APB', color: '#ED1C24', textColor: '#fff', logoSrc: '/bank-logos/airtel.svg' },
     { id: 'fino', name: 'Fino Payments Bank', abbr: 'FINO', color: '#E31937', textColor: '#fff' },
-    { id: 'jio', name: 'Jio Payments Bank', abbr: 'JIO', color: '#0A3B7E', textColor: '#fff' },
-    { id: 'fi', name: 'Fi Money', abbr: 'Fi', color: '#6C3FEE', textColor: '#fff' },
+    { id: 'jio', name: 'Jio Payments Bank', abbr: 'JIO', color: '#0A3B7E', textColor: '#fff', logoSrc: '/bank-logos/jio.svg' },
+    { id: 'fi', name: 'Fi Money', abbr: 'Fi', color: '#6C3FEE', textColor: '#fff', logoSrc: '/bank-logos/fi.svg' },
     { id: 'jupiter', name: 'Jupiter', abbr: 'JUP', color: '#5539CC', textColor: '#fff' },
     { id: 'niyo', name: 'Niyo', abbr: 'NIYO', color: '#FF5722', textColor: '#fff' },
 
     // Foreign Banks in India
     { id: 'citi', name: 'Citibank', abbr: 'CITI', color: '#003B70', textColor: '#fff' },
-    { id: 'hsbc', name: 'HSBC', abbr: 'HSBC', color: '#DB0011', textColor: '#fff' },
+    { id: 'hsbc', name: 'HSBC', abbr: 'HSBC', color: '#DB0011', textColor: '#fff', logoSrc: '/bank-logos/hsbc.svg' },
     { id: 'sc', name: 'Standard Chartered', abbr: 'SC', color: '#0072AA', textColor: '#fff' },
-    { id: 'deutsche', name: 'Deutsche Bank', abbr: 'DB', color: '#0018A8', textColor: '#fff' },
-    { id: 'barclays', name: 'Barclays', abbr: 'BRC', color: '#00AEEF', textColor: '#fff' },
+    { id: 'deutsche', name: 'Deutsche Bank', abbr: 'DB', color: '#0018A8', textColor: '#fff', logoSrc: '/bank-logos/deutsche.svg' },
+    { id: 'barclays', name: 'Barclays', abbr: 'BRC', color: '#00AEEF', textColor: '#fff', logoSrc: '/bank-logos/barclays.svg' },
     { id: 'dbs', name: 'DBS Bank', abbr: 'DBS', color: '#E21A22', textColor: '#fff' },
-    { id: 'jpmorgan', name: 'JP Morgan Chase', abbr: 'JPM', color: '#117ACA', textColor: '#fff' },
-    { id: 'boa', name: 'Bank of America', abbr: 'BOA', color: '#012169', textColor: '#fff' },
-    { id: 'wells', name: 'Wells Fargo', abbr: 'WF', color: '#D71E28', textColor: '#fff' },
+    { id: 'jpmorgan', name: 'JP Morgan Chase', abbr: 'JPM', color: '#117ACA', textColor: '#fff', logoSrc: '/bank-logos/jpmorgan.svg' },
+    { id: 'boa', name: 'Bank of America', abbr: 'BOA', color: '#012169', textColor: '#fff', logoSrc: '/bank-logos/boa.svg' },
+    { id: 'wells', name: 'Wells Fargo', abbr: 'WF', color: '#D71E28', textColor: '#fff', logoSrc: '/bank-logos/wells.svg' },
 
     // Generic Account Types
     { id: 'generic_bank', name: 'Bank Account', abbr: '🏦', color: '#6366f1', textColor: '#fff', isEmoji: true },

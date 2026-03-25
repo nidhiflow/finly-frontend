@@ -1,0 +1,12 @@
+# Static site + SPA fallback. If this service already exists in the dashboard,
+# add the rule there instead of duplicating: Redirects/Rewrites → /* → /index.html → Rewrite.
+services:
+  - type: web
+    name: finly-frontend
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

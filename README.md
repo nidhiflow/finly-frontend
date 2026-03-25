@@ -94,6 +94,21 @@ npm run build
 
 Output is generated in the `dist/` directory.
 
+### Deploy on Render (client-side routes)
+
+This app uses **React Router**. Deep links such as `/login` or `/accounts` must return the SPA shell, not a 404.
+
+On a **Render Static Site**, either:
+
+1. Open **Redirects / Rewrites**, add: **Source** `/*`, **Destination** `/index.html`, **Action** **Rewrite** (not Redirect), or  
+2. Sync the repo’s [`render.yaml`](render.yaml) blueprint so the same rule is applied.
+
+`public/_redirects` is for Netlify-style hosts; **Render does not read it** for static sites.
+
+### Bank logos (Accounts)
+
+Bundled SVGs live in [`public/bank-logos/`](public/bank-logos/) (simplified brand marks, CC0 via [Simple Icons](https://simpleicons.org)). To add another bank, place `yourid.svg` there and set `logoSrc: '/bank-logos/yourid.svg'` on that row in [`src/data/bankLogos.js`](src/data/bankLogos.js). You can also set `simpleIconSlug` (Simple Icons slug) to load from their CDN when `logoSrc` is omitted.
+
 ---
 
 ## 🔧 Environment Variables

@@ -1,1 +1,2 @@
+# Netlify / Cloudflare-style hosts. On Render, add a Rewrite in the dashboard or use render.yaml (/* -> /index.html).
 /*    /index.html   200

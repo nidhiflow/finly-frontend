@@ -5,26 +5,11 @@ import { accountsAPI, statsAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import BANK_LOGOS, { getBankById } from '../data/bankLogos';
-
-function BankLogo({ bank, size = 44 }) {
-    if (!bank) return null;
-    if (bank.isEmoji) {
-        return (
-            <div className="bank-logo" style={{ width: size, height: size, background: `${bank.color}22`, fontSize: size * 0.5 }}>
-                {bank.abbr}
-            </div>
-        );
-    }
-    return (
-        <div className="bank-logo" style={{ width: size, height: size, background: bank.color, color: bank.textColor, fontSize: size * 0.26 }}>
-            {bank.abbr}
-        </div>
-    );
-}
+import { BankLogo } from '../components/BankLogo';
 
 function AccountIcon({ icon, size = 44 }) {
     const bank = getBankById(icon);
-    if (bank) return <BankLogo bank={bank} size={size} />;
+    if (bank) return <BankLogo key={icon} bank={bank} size={size} />;
     return <div className="account-card-icon">{icon}</div>;
 }
 
@@ -513,7 +498,7 @@ export default function Accounts() {
                                 <div className="input-group">
                                     <label className="input-label">Bank / Logo</label>
                                     <button type="button" className="bank-logo-trigger" onClick={() => setShowBankPicker(!showBankPicker)}>
-                                        <AccountIcon icon={form.icon} size={32} />
+                                        <AccountIcon key={form.icon} icon={form.icon} size={32} />
                                         <span>{getBankById(form.icon)?.name || 'Select a bank or icon'}</span>
                                         <ChevronDown size={16} className={showBankPicker ? 'rotated' : ''} />
                                     </button>
@@ -543,7 +528,7 @@ export default function Accounts() {
                                                                 setBankSearch('');
                                                             }}
                                                         >
-                                                            <BankLogo bank={b} size={38} />
+                                                            <BankLogo key={b.id} bank={b} size={38} />
                                                             <span className="bank-logo-option-name">{b.name}</span>
                                                         </button>
                                                     ))}
