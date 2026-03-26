@@ -107,7 +107,9 @@ On a **Render Static Site**, either:
 
 ### Bank logos (Accounts)
 
-Bundled SVGs live in [`public/bank-logos/`](public/bank-logos/) (simplified brand marks, CC0 via [Simple Icons](https://simpleicons.org)). To add another bank, place `yourid.svg` there and set `logoSrc: '/bank-logos/yourid.svg'` on that row in [`src/data/bankLogos.js`](src/data/bankLogos.js). You can also set `simpleIconSlug` (Simple Icons slug) to load from their CDN when `logoSrc` is omitted.
+Resolution order (see [`getBankLogoSources`](src/data/bankLogos.js)): **[Clearbit](https://clearbit.com/logo)** `https://logo.clearbit.com/{logoDomain}` → optional `public/bank-logos/color/{id}.png` → local SVG in [`public/bank-logos/`](public/bank-logos/) → [Simple Icons](https://simpleicons.org) CDN if `simpleIconSlug` is set → initials/emoji. Each bank row uses `logoDomain` for colour logos where applicable. Clearbit and bank marks are third-party; ensure your use complies with their terms and brand rules.
+
+To add a bank: extend [`src/data/bankLogos.js`](src/data/bankLogos.js) with `id`, `logoDomain`, and optionally `logoSrc: '/bank-logos/yourid.svg'`. Override wrong/missing Clearbit images by adding `public/bank-logos/color/{id}.png`.
 
 ---
 
@@ -116,6 +118,7 @@ Bundled SVGs live in [`public/bank-logos/`](public/bank-logos/) (simplified bran
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `VITE_API_BASE_URL` | Backend API base URL | `/api` (proxied in dev) |
+| `VITE_DISABLE_CLEARBIT_LOGOS` | If `true`, skip Clearbit URLs; use local color PNG / SVG only | unset |
 
 Create a `.env.local` file:
 

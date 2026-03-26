@@ -31,8 +31,13 @@ export default function AddTransaction() {
     const [showPhotoPreview, setShowPhotoPreview] = useState(false);
     const [photoZoom, setPhotoZoom] = useState(1);
     const [suggestions, setSuggestions] = useState([]);
-    const [mobileSection, setMobileSection] = useState('details');
+    /** Mobile two-step category: main id while picking a subcategory */
+    const [subPickMainId, setSubPickMainId] = useState(null);
     const isMobile = useIsMobile();
+
+    useEffect(() => {
+        setSubPickMainId(null);
+    }, [type]);
 
     useEffect(() => {
         loadData();
@@ -356,6 +361,7 @@ export default function AddTransaction() {
                     // Reset form but keep type, account, and date
                     setAmount('');
                     setCategoryId('');
+                    setSubPickMainId(null);
                     setNote('');
                     setPhoto(null);
                     setShowCalc(false);
@@ -377,14 +383,24 @@ export default function AddTransaction() {
 
     const calcButtons = ['7', '8', '9', '⌫', '4', '5', '6', 'C', '1', '2', '3', '÷', '0', '.', '×', '−', '+', '='];
     const selectedCategoryDisplay = categoryId && type !== 'transfer' ? getSelectedCategoryDisplay(categoryId) : null;
-    const selectedAccount = useMemo(
-        () => accountOptions.find((account) => account.id === accountId) || null,
-        [accountOptions, accountId]
+
+    const subPickParent = useMemo(
+        () => (subPickMainId ? filteredCategories.find((c) => c.id === subPickMainId) : null),
+        [subPickMainId, filteredCategories]
     );
-    const selectedToAccount = useMemo(
-        () => accountOptions.find((account) => account.id === toAccountId) || null,
-        [accountOptions, toAccountId]
-    );
+
+    const isMobileMainRowSelected = (cat) =>
+        categoryId === cat.id || (cat.subcategories || []).some((s) => s.id === categoryId);
+
+    const handleMobileMainCategory = (cat) => {
+        if (cat.subcategories?.length) {
+            setSubPickMainId(cat.id);
+            setCategoryId(cat.id);
+        } else {
+            setSubPickMainId(null);
+            setCategoryId(cat.id);
+        }
+    };
 
     return (
         <>
@@ -413,52 +429,8 @@ export default function AddTransaction() {
                 <button className={`tab transfer ${type === 'transfer' ? 'active' : ''}`} onClick={() => setType('transfer')}>Transfer</button>
             </div>
 
-            {isMobile && (
-                <div className="card add-transaction-mobile-overview">
-                    <div className="page-toolbar-subtitle">Mobile entry flow</div>
-                    <div className="dashboard-section-note">
-                        Open only the section you need, then save from the sticky action bar.
-                    </div>
-                    <div className="add-transaction-mobile-overview-grid">
-                        <button type="button" className={`add-transaction-mobile-chip ${mobileSection === 'details' ? 'active' : ''}`} onClick={() => setMobileSection('details')}>
-                            <span>Amount</span>
-                            <strong>{amount ? formatCurrency(Number(amount) || 0) : 'Set amount'}</strong>
-                        </button>
-                        <button type="button" className={`add-transaction-mobile-chip ${mobileSection === 'category' ? 'active' : ''}`} onClick={() => setMobileSection('category')}>
-                            <span>Category</span>
-                            <strong>
-                                {selectedCategoryDisplay
-                                    ? (selectedCategoryDisplay.sub ? `${selectedCategoryDisplay.main.name} / ${selectedCategoryDisplay.sub.name}` : selectedCategoryDisplay.main.name)
-                                    : 'Choose'}
-                            </strong>
-                        </button>
-                        <button type="button" className={`add-transaction-mobile-chip ${mobileSection === 'details' ? 'active' : ''}`} onClick={() => setMobileSection('details')}>
-                            <span>Account</span>
-                            <strong>
-                                {type === 'transfer' && selectedAccount && selectedToAccount
-                                    ? `${selectedAccount.name} -> ${selectedToAccount.name}`
-                                    : selectedAccount
-                                        ? getAccountLabel(selectedAccount)
-                                        : 'Choose'}
-                            </strong>
-                        </button>
-                        <button type="button" className={`add-transaction-mobile-chip ${mobileSection === 'extras' ? 'active' : ''}`} onClick={() => setMobileSection('extras')}>
-                            <span>Extras</span>
-                            <strong>{photo ? 'Receipt ready' : note ? 'Note added' : 'Optional'}</strong>
-                        </button>
-                    </div>
-                    <div className="add-transaction-mobile-steps">
-                        <button type="button" className={`btn btn-sm ${mobileSection === 'details' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMobileSection('details')}>Details</button>
-                        {type !== 'transfer' && (
-                            <button type="button" className={`btn btn-sm ${mobileSection === 'category' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMobileSection('category')}>Category</button>
-                        )}
-                        <button type="button" className={`btn btn-sm ${mobileSection === 'extras' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMobileSection('extras')}>Receipt & note</button>
-                    </div>
-                </div>
-            )}
-
-            {/* Smart suggestions — quick fill from recent */}
-            {type === 'expense' && suggestions.length > 0 && (
+            {/* Smart suggestions — quick fill from recent (desktop) */}
+            {!isMobile && type === 'expense' && suggestions.length > 0 && (
                 <div className="card quick-add-card" style={{ marginBottom: 16 }}>
                     <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>Quick add</div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -479,12 +451,9 @@ export default function AddTransaction() {
 
             {/* Main transaction form */}
             <form id="transaction-form" onSubmit={handleSubmit}>
-                <div className={`grid-2 add-transaction-layout ${isMobile ? 'mobile' : ''}`}>
-                    {/* Left column: details + note/receipt + buttons */}
-                    <div className="add-transaction-left-col">
-                        {(!isMobile || mobileSection === 'details') && (
+                {isMobile ? (
+                    <div className="add-transaction-mobile-stack">
                         <div className="card form-section-card add-transaction-primary-card">
-                            {/* Amount */}
                             <div className="input-group">
                                 <label className="input-label">Amount</label>
                                 <div style={{ display: 'flex', gap: 8 }}>
@@ -495,8 +464,6 @@ export default function AddTransaction() {
                                     </button>
                                 </div>
                             </div>
-
-                            {/* Calculator */}
                             {showCalc && (
                                 <div className="card slide-up calc-panel" style={{ marginBottom: 16, padding: 12 }}>
                                     <div className="calc-grid">
@@ -509,24 +476,121 @@ export default function AddTransaction() {
                                     </div>
                                 </div>
                             )}
-
-                            {/* Selected Category Badge */}
-                            {selectedCategoryDisplay && (() => {
-                                const { main, sub } = selectedCategoryDisplay;
-                                const icon = sub ? sub.icon : main.icon;
-                                const name = sub ? `${main.name} > ${sub.name}` : main.name;
-                                return (
-                                    <div className="selected-category-badge">
-                                        <span className="selected-category-icon">{icon}</span>
-                                        <span className="selected-category-name">{name}</span>
-                                        <button type="button" className="selected-category-clear" onClick={() => setCategoryId('')}>
-                                            <X size={14} />
+                            <div className="input-group add-transaction-mobile-scan-block">
+                                <label className="input-label">Receipt</label>
+                                <div className="add-transaction-upload-actions">
+                                    <label className="btn btn-secondary" style={{ cursor: 'pointer', flex: 1 }}>
+                                        <Camera size={16} /> {photo ? 'Change' : 'Attach'}
+                                        <input type="file" accept="image/*" capture="environment" onChange={handlePhotoChange} style={{ display: 'none' }} />
+                                    </label>
+                                    <label className="btn btn-primary" style={{ cursor: scanning ? 'wait' : 'pointer', flex: 1, opacity: scanning ? 0.7 : 1 }}>
+                                        {scanning ? <Loader size={16} className="spin" /> : <Sparkles size={16} />}
+                                        {scanning ? 'Scanning...' : 'AI Scan'}
+                                        <input type="file" accept="image/*,.pdf" capture="environment" onChange={handleAiScan} style={{ display: 'none' }} disabled={scanning} />
+                                    </label>
+                                </div>
+                                {photo && (
+                                    <div style={{ marginTop: 8, position: 'relative' }}>
+                                        <img
+                                            src={photo}
+                                            alt="receipt"
+                                            style={{ maxWidth: '100%', maxHeight: 150, borderRadius: 'var(--radius)', objectFit: 'cover', cursor: 'pointer' }}
+                                            onClick={() => {
+                                                setPhotoZoom(1);
+                                                setShowPhotoPreview(true);
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="btn btn-danger btn-sm"
+                                            onClick={() => {
+                                                setPhoto(null);
+                                                setShowPhotoPreview(false);
+                                            }}
+                                            style={{ position: 'absolute', top: 4, right: 4 }}
+                                        >
+                                            Remove
                                         </button>
                                     </div>
-                                );
-                            })()}
+                                )}
+                            </div>
+                        </div>
 
-                            {/* Account */}
+                        {type !== 'transfer' && (
+                            <div className="card form-section-card add-transaction-category-card">
+                                <div className="input-group">
+                                    <label className="input-label">Category</label>
+                                </div>
+                                {selectedCategoryDisplay && !subPickMainId && (() => {
+                                    const { main, sub } = selectedCategoryDisplay;
+                                    return (
+                                        <div className="add-transaction-mobile-category-summary">
+                                            <div className="add-transaction-mobile-category-summary-icons" aria-hidden>
+                                                <span className="add-transaction-mobile-category-ico">{main.icon}</span>
+                                                {sub && <span className="add-transaction-mobile-category-ico">{sub.icon}</span>}
+                                            </div>
+                                            <span className="add-transaction-mobile-category-summary-text">
+                                                {sub ? `${main.name} / ${sub.name}` : main.name}
+                                            </span>
+                                            <button type="button" className="selected-category-clear" onClick={() => { setCategoryId(''); setSubPickMainId(null); }} title="Clear category">
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    );
+                                })()}
+                                {subPickMainId && subPickParent ? (
+                                    <>
+                                        <button type="button" className="btn btn-ghost btn-sm add-transaction-mobile-cat-back" onClick={() => setSubPickMainId(null)}>
+                                            <ArrowLeft size={16} /> {subPickParent.name}
+                                        </button>
+                                        <div className="category-grid">
+                                            {(subPickParent.subcategories || []).map((sub) => (
+                                                <div
+                                                    key={sub.id}
+                                                    className={`category-item ${categoryId === sub.id ? 'selected' : ''}`}
+                                                    onClick={() => { setCategoryId(sub.id); setSubPickMainId(null); }}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            e.preventDefault();
+                                                            setCategoryId(sub.id);
+                                                            setSubPickMainId(null);
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className="category-item-icon">{sub.icon}</div>
+                                                    <div className="category-item-name">{sub.name}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="category-grid">
+                                        {filteredCategories.map((cat) => (
+                                            <div
+                                                key={cat.id}
+                                                className={`category-item ${isMobileMainRowSelected(cat) ? 'selected' : ''}`}
+                                                onClick={() => handleMobileMainCategory(cat)}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        handleMobileMainCategory(cat);
+                                                    }
+                                                }}
+                                            >
+                                                <div className="category-item-icon">{cat.icon}</div>
+                                                <div className="category-item-name">{cat.name}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="card form-section-card add-transaction-primary-card">
                             <div className="input-group">
                                 <label className="input-label">{type === 'transfer' ? 'From Account' : 'Account'}</label>
                                 <select className="input" value={accountId} onChange={e => setAccountId(e.target.value)} required>
@@ -534,8 +598,6 @@ export default function AddTransaction() {
                                     {accountOptions.map(a => <option key={a.id} value={a.id}>{getAccountLabel(a)}</option>)}
                                 </select>
                             </div>
-
-                            {/* To Account (transfers only) */}
                             {type === 'transfer' && (
                                 <div className="input-group">
                                     <label className="input-label">To Account</label>
@@ -547,14 +609,10 @@ export default function AddTransaction() {
                                     </select>
                                 </div>
                             )}
-
-                            {/* Date */}
                             <div className="input-group">
                                 <label className="input-label">Date</label>
                                 <input type="date" className="input" value={date} onChange={e => setDate(e.target.value)} required />
                             </div>
-
-                            {/* Set repeat (new transactions only) */}
                             {!editId && (
                                 <div className="input-group">
                                     <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
@@ -572,17 +630,111 @@ export default function AddTransaction() {
                                     )}
                                 </div>
                             )}
-
                         </div>
-                        )}
 
-                        {(!isMobile || mobileSection === 'extras') && (
+                        <div className="card form-section-card add-transaction-extras-card">
+                            <div className="input-group">
+                                <label className="input-label">Note</label>
+                                <textarea className="input" placeholder="Add a note..." value={note} onChange={e => setNote(e.target.value)} rows={3} />
+                            </div>
+                        </div>
+
+                        <div className="add-transaction-sticky-actions">
+                            <button className="btn btn-primary" type="button" disabled={loading} onClick={() => saveTransaction(false)}>
+                                {loading ? 'Saving...' : 'Save'}
+                            </button>
+                            {!editId && (
+                                <button className="btn btn-secondary" type="button" disabled={loading} onClick={() => saveTransaction(true)}>
+                                    {loading ? 'Working...' : 'Continue'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="grid-2 add-transaction-layout">
+                        <div className="add-transaction-left-col">
+                            <div className="card form-section-card add-transaction-primary-card">
+                                <div className="input-group">
+                                    <label className="input-label">Amount</label>
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <input type="text" inputMode="decimal" className="input" placeholder="0" value={amount}
+                                            onChange={e => setAmount(e.target.value.replace(/[^0-9.\s+×÷−\-*/]/g, ''))} style={{ fontSize: 24, fontWeight: 700 }} required />
+                                        <button type="button" className="btn btn-secondary btn-icon" onClick={() => setShowCalc(!showCalc)}>
+                                            <Calculator size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+                                {showCalc && (
+                                    <div className="card slide-up calc-panel" style={{ marginBottom: 16, padding: 12 }}>
+                                        <div className="calc-grid">
+                                            {calcButtons.map(btn => (
+                                                <button key={btn} type="button"
+                                                    className={`btn btn-secondary calc-btn ${['÷', '×', '−', '+'].includes(btn) ? 'calc-operator' : ''}`}
+                                                    onClick={() => handleCalcInput(btn)}
+                                                    style={{ padding: '12px', fontSize: 16, fontWeight: 600 }}>{btn}</button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                {selectedCategoryDisplay && (() => {
+                                    const { main, sub } = selectedCategoryDisplay;
+                                    const icon = sub ? sub.icon : main.icon;
+                                    const name = sub ? `${main.name} > ${sub.name}` : main.name;
+                                    return (
+                                        <div className="selected-category-badge">
+                                            <span className="selected-category-icon">{icon}</span>
+                                            <span className="selected-category-name">{name}</span>
+                                            <button type="button" className="selected-category-clear" onClick={() => setCategoryId('')}>
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    );
+                                })()}
+                                <div className="input-group">
+                                    <label className="input-label">{type === 'transfer' ? 'From Account' : 'Account'}</label>
+                                    <select className="input" value={accountId} onChange={e => setAccountId(e.target.value)} required>
+                                        <option value="">Select account</option>
+                                        {accountOptions.map(a => <option key={a.id} value={a.id}>{getAccountLabel(a)}</option>)}
+                                    </select>
+                                </div>
+                                {type === 'transfer' && (
+                                    <div className="input-group">
+                                        <label className="input-label">To Account</label>
+                                        <select className="input" value={toAccountId} onChange={e => setToAccountId(e.target.value)} required>
+                                            <option value="">Select destination</option>
+                                            {accountOptions.filter(a => a.id !== accountId).map(a => (
+                                                <option key={a.id} value={a.id}>{getAccountLabel(a)}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+                                <div className="input-group">
+                                    <label className="input-label">Date</label>
+                                    <input type="date" className="input" value={date} onChange={e => setDate(e.target.value)} required />
+                                </div>
+                                {!editId && (
+                                    <div className="input-group">
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                                            <input type="checkbox" checked={isRepeatEnabled} onChange={e => setIsRepeatEnabled(e.target.checked)} />
+                                            <span className="input-label" style={{ margin: 0 }}>Set repeat</span>
+                                        </label>
+                                        {isRepeatEnabled && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                                                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Repeat for</span>
+                                                <select className="input" value={repeatMonths} onChange={e => setRepeatMonths(Number(e.target.value))} style={{ width: 'auto' }}>
+                                                    {[2,3,4,5,6,7,8,9,10,11,12].map(n => <option key={n} value={n}>{n} months</option>)}
+                                                </select>
+                                                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>on the same date each month</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                             <div className="card form-section-card add-transaction-extras-card">
                                 <div className="input-group">
                                     <label className="input-label">Note</label>
                                     <textarea className="input" placeholder="Add a note..." value={note} onChange={e => setNote(e.target.value)} rows={3} />
                                 </div>
-
                                 <div className="input-group">
                                     <label className="input-label">Receipt Photo</label>
                                     <div className="add-transaction-upload-actions">
@@ -622,20 +774,6 @@ export default function AddTransaction() {
                                     )}
                                 </div>
                             </div>
-                        )}
-
-                        {isMobile ? (
-                            <div className="add-transaction-sticky-actions">
-                                <button className="btn btn-primary" type="button" disabled={loading} onClick={() => saveTransaction(false)}>
-                                    {loading ? 'Saving...' : 'Save'}
-                                </button>
-                                {!editId && (
-                                    <button className="btn btn-secondary" type="button" disabled={loading} onClick={() => saveTransaction(true)}>
-                                        {loading ? 'Working...' : 'Continue'}
-                                    </button>
-                                )}
-                            </div>
-                        ) : (
                             <div className="add-transaction-upload-actions" style={{ marginTop: 8 }}>
                                 <button className="btn btn-primary" type="submit" disabled={loading} style={{ flex: 1 }}>
                                     {loading ? 'Saving...' : 'Save'}
@@ -646,42 +784,39 @@ export default function AddTransaction() {
                                     </button>
                                 )}
                             </div>
+                        </div>
+                        {type !== 'transfer' && (
+                            <div className="card form-section-card add-transaction-category-card">
+                                <div className="input-group">
+                                    <label className="input-label">Category</label>
+                                </div>
+                                <div className="category-grid">
+                                    {filteredCategories.map(cat => (
+                                        <div key={cat.id} className={`category-item ${categoryId === cat.id || (cat.subcategories || []).some(s => s.id === categoryId) ? 'selected' : ''}`}
+                                            onClick={() => setCategoryId(cat.id)}>
+                                            <div className="category-item-icon">{cat.icon}</div>
+                                            <div className="category-item-name">{cat.name}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                                {categoryId && getParentForCategory(categoryId)?.subcategories?.length > 0 && (
+                                    <div style={{ marginTop: 16 }}>
+                                        <div className="input-label" style={{ marginBottom: 8 }}>Subcategory</div>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                                            {getParentForCategory(categoryId).subcategories.map(sub => (
+                                                <button key={sub.id} type="button"
+                                                    className={`btn ${categoryId === sub.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                                                    onClick={() => setCategoryId(sub.id)}>
+                                                    {sub.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
-
-                    {/* Category Picker (right column) */}
-                    {type !== 'transfer' && (!isMobile || mobileSection === 'category') && (
-                        <div className="card form-section-card add-transaction-category-card">
-                            <div className="input-group">
-                                <label className="input-label">Category</label>
-                            </div>
-                            <div className="category-grid">
-                                {filteredCategories.map(cat => (
-                                    <div key={cat.id} className={`category-item ${categoryId === cat.id || (cat.subcategories || []).some(s => s.id === categoryId) ? 'selected' : ''}`}
-                                        onClick={() => setCategoryId(cat.id)}>
-                                        <div className="category-item-icon">{cat.icon}</div>
-                                        <div className="category-item-name">{cat.name}</div>
-                                    </div>
-                                ))}
-                            </div>
-                            {categoryId && getParentForCategory(categoryId)?.subcategories?.length > 0 && (
-                                <div style={{ marginTop: 16 }}>
-                                    <div className="input-label" style={{ marginBottom: 8 }}>Subcategory</div>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                                        {getParentForCategory(categoryId).subcategories.map(sub => (
-                                            <button key={sub.id} type="button"
-                                                className={`btn ${categoryId === sub.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
-                                                onClick={() => setCategoryId(sub.id)}>
-                                                {sub.name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                </div>
+                )}
             </form>
         </div>
         {showPhotoPreview && photo && (

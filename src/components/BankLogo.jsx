@@ -1,25 +1,18 @@
-import { useState } from 'react';
+﻿import { useEffect, useMemo, useState } from "react";
+import { getBankLogoSources } from "../data/bankLogos";
 
-/**
- * Bank mark: local SVG (logoSrc), CDN Simple Icons (simpleIconSlug), then initials/emoji.
- * Local SVGs under /bank-logos are from simple-icons (CC0); add your own files to override.
- * Parent should pass `key={bank.id}` (or account icon id) so image error state resets when the bank changes.
- */
-export function BankLogo({ bank, size = 44, className = '' }) {
-    const [imgFailed, setImgFailed] = useState(false);
-
+export function BankLogo({ bank, size = 44, className = "" }) {
+    const [failIndex, setFailIndex] = useState(0);
+    const sources = useMemo(() => (bank ? getBankLogoSources(bank) : []), [bank]);
+    useEffect(() => {
+        setFailIndex(0);
+    }, [bank]);
     if (!bank) return null;
-
-    const hex = (bank.color || '#6366f1').replace(/^#/, '');
-    const cdnSrc = bank.simpleIconSlug
-        ? `https://cdn.simpleicons.org/${bank.simpleIconSlug}/${hex}`
-        : null;
-    const imgSrc = bank.logoSrc || cdnSrc;
-
-    if (imgSrc && !imgFailed) {
+    const imgSrc = sources[failIndex] || null;
+    if (imgSrc) {
         return (
             <div
-                className={`bank-logo-tile ${className}`}
+                className={`bank-logo-tile bank-logo-tile--enter ${className}`}
                 style={{ width: size, height: size }}
             >
                 <img
@@ -29,12 +22,11 @@ export function BankLogo({ bank, size = 44, className = '' }) {
                     loading="lazy"
                     decoding="async"
                     referrerPolicy="no-referrer"
-                    onError={() => setImgFailed(true)}
+                    onError={() => setFailIndex((i) => i + 1)}
                 />
             </div>
         );
     }
-
     if (bank.isEmoji) {
         return (
             <div
@@ -50,7 +42,6 @@ export function BankLogo({ bank, size = 44, className = '' }) {
             </div>
         );
     }
-
     return (
         <div
             className={`bank-logo bank-logo-fallback ${className}`}

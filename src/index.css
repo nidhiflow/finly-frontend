@@ -3873,6 +3873,10 @@ textarea.input {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .add-transaction-page .add-transaction-mobile-stack .category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .add-transaction-page .form-section-card {
     overflow: visible;
   }
@@ -4740,9 +4744,183 @@ textarea.input {
   min-height: 46px;
 }
 
+.add-transaction-mobile-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.add-transaction-mobile-scan-block {
+  margin-top: 4px;
+}
+
+.add-transaction-mobile-category-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--accent-primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 22%, transparent);
+}
+
+.add-transaction-mobile-category-summary-icons {
+  display: flex;
+  gap: 6px;
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.add-transaction-mobile-category-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+}
+
+.add-transaction-mobile-category-summary-text {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.add-transaction-mobile-cat-back {
+  margin-bottom: 12px;
+  width: 100%;
+  justify-content: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .transactions-mobile-hub,
 .transactions-mobile-panel {
   padding: 16px;
+}
+
+/* Mobile transactions — Ledger-style type tabs, search row, glass list rows */
+@media (max-width: 768px) {
+  .transactions-page--mobile-ledger .transactions-toolbar-row {
+    display: none;
+  }
+
+  .transactions-mobile-ledger-bar {
+    padding: 14px 16px;
+    margin-bottom: 0;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--bg-card) 82%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .transactions-mobile-type-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .transactions-mobile-type-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .transactions-mobile-type-tab {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .transactions-mobile-type-tab.active {
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+    background: var(--accent-primary-light);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-primary) 25%, transparent);
+  }
+
+  .transactions-mobile-ledger-tools {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .transactions-mobile-ledger-tools .search-input-wrapper {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .transactions-mobile-ledger-tools .btn {
+    flex-shrink: 0;
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .transactions-page--mobile-ledger .tx-date-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    padding: 12px 4px 8px;
+    color: color-mix(in srgb, var(--text-muted) 88%, var(--accent-primary));
+  }
+
+  .transactions-page--mobile-ledger .tx-list {
+    gap: 10px;
+  }
+
+  .transactions-page--mobile-ledger .tx-item {
+    margin-bottom: 0;
+    border-radius: 18px;
+    padding: 14px 16px;
+    background: color-mix(in srgb, var(--bg-card) 72%, transparent);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+    box-shadow:
+      0 4px 24px color-mix(in srgb, #000 12%, transparent),
+      inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
+  }
+
+  body.theme-light .transactions-page--mobile-ledger .tx-item {
+    box-shadow:
+      0 4px 20px rgba(15, 23, 42, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .transactions-page--mobile-ledger .tx-item:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--accent-primary) 35%, transparent);
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .transactions-page--mobile-ledger .tx-item:hover {
+    transform: none;
+  }
 }
 
 .bottom-nav-add {
@@ -6474,6 +6652,17 @@ textarea.input {
   border-radius: 14px;
 }
 
+@keyframes bankLogoTileEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .bank-logo-tile {
   display: flex;
   align-items: center;
@@ -6487,7 +6676,11 @@ textarea.input {
   box-shadow:
     0 2px 12px color-mix(in srgb, #7b61ff 18%, transparent),
     0 0 0 1px color-mix(in srgb, var(--border) 40%, transparent);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.22s cubic-bezier(0.34, 1.2, 0.64, 1), box-shadow 0.22s ease;
+}
+
+.bank-logo-tile--enter {
+  animation: bankLogoTileEnter 0.38s cubic-bezier(0.34, 1.15, 0.64, 1) both;
 }
 
 .bank-logo-tile img {
@@ -6499,10 +6692,11 @@ textarea.input {
 
 .bank-logo-option:hover .bank-logo-tile,
 .mobile-account-row:active .bank-logo-tile {
-  transform: scale(1.05);
+  transform: scale(1.08) translateY(-1px);
   box-shadow:
-    0 4px 20px color-mix(in srgb, #ec4899 22%, transparent),
-    0 0 24px color-mix(in srgb, #22d3ee 12%, transparent);
+    0 6px 24px color-mix(in srgb, #ec4899 28%, transparent),
+    0 0 28px color-mix(in srgb, #22d3ee 18%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--accent-primary) 35%, transparent);
 }
 
 .bank-logo-option.selected .bank-logo-tile {
@@ -6513,10 +6707,12 @@ textarea.input {
 
 @media (prefers-reduced-motion: reduce) {
   .bank-logo-tile,
+  .bank-logo-tile--enter,
   .bank-logo-option:hover .bank-logo-tile,
   .mobile-account-row:active .bank-logo-tile {
     transition: none;
     transform: none;
+    animation: none;
   }
 }
 

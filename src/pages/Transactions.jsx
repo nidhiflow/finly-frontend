@@ -248,7 +248,7 @@ export default function Transactions() {
     ];
 
     return (
-        <div className="fade-in page-stack transactions-page">
+        <div className={`fade-in page-stack transactions-page${isMobile ? ' transactions-page--mobile-ledger' : ''}`}>
             <div className="card page-toolbar-card">
                 <div className="page-toolbar-header">
                     <div>
@@ -302,6 +302,52 @@ export default function Transactions() {
                 </div>
             </div>
             </div>
+
+            {isMobile && (
+                <div className="card transactions-mobile-ledger-bar">
+                    <div className="transactions-mobile-type-tabs" role="tablist" aria-label="Transaction type">
+                        {[
+                            { value: '', label: 'All' },
+                            { value: 'income', label: 'Income' },
+                            { value: 'expense', label: 'Expense' },
+                            { value: 'transfer', label: 'Transfer' },
+                        ].map((tab) => (
+                            <button
+                                key={tab.value || 'all'}
+                                type="button"
+                                role="tab"
+                                aria-selected={filters.type === tab.value}
+                                className={`transactions-mobile-type-tab ${filters.type === tab.value ? 'active' : ''}`}
+                                onClick={() => {
+                                    const next = { ...filters, type: tab.value };
+                                    setFilters(next);
+                                    syncFiltersToUrl(next);
+                                }}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="transactions-mobile-ledger-tools">
+                        <div className="search-input-wrapper transactions-search-box">
+                            <Search size={18} />
+                            <input
+                                className="input"
+                                placeholder="Search notes..."
+                                value={filters.search}
+                                onChange={(e) => {
+                                    const next = { ...filters, search: e.target.value };
+                                    setFilters(next);
+                                    syncFiltersToUrl(next);
+                                }}
+                            />
+                        </div>
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowFilters(!showFilters)} title="More filters">
+                            <Filter size={16} />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {showFilters && (
                 <div className="card filter-panel-card slide-up">
