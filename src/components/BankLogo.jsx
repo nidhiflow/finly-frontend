@@ -1,14 +1,18 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { getBankLogoSources } from "../data/bankLogos";
 
+/**
+ * Full-colour first: Clearbit → /bank-logos/color/{id}.png → SVG → Simple Icons → initials/emoji.
+ * Parent should pass key={bank.id} (or account icon id) so failIndex resets when the bank changes.
+ */
 export function BankLogo({ bank, size = 44, className = "" }) {
     const [failIndex, setFailIndex] = useState(0);
     const sources = useMemo(() => (bank ? getBankLogoSources(bank) : []), [bank]);
-    useEffect(() => {
-        setFailIndex(0);
-    }, [bank]);
+
     if (!bank) return null;
+
     const imgSrc = sources[failIndex] || null;
+
     if (imgSrc) {
         return (
             <div
@@ -27,6 +31,7 @@ export function BankLogo({ bank, size = 44, className = "" }) {
             </div>
         );
     }
+
     if (bank.isEmoji) {
         return (
             <div
@@ -42,6 +47,7 @@ export function BankLogo({ bank, size = 44, className = "" }) {
             </div>
         );
     }
+
     return (
         <div
             className={`bank-logo bank-logo-fallback ${className}`}
