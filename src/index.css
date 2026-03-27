@@ -6828,6 +6828,72 @@ body.theme-light .bank-logo-tile {
   white-space: nowrap;
 }
 
+@keyframes staggerFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.bank-logo-option {
+  animation-name: staggerFadeIn;
+  animation-duration: 0.25s;
+  animation-fill-mode: both;
+  animation-timing-function: ease-out;
+}
+
+.bank-logo-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.bank-logo-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: none;
+  cursor: pointer;
+  color: var(--accent-primary);
+  font-size: 13px;
+  font-weight: 600;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.bank-logo-add-btn:hover {
+  border-color: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+}
+
+.bank-logo-add-btn:active {
+  transform: scale(0.97);
+}
+
+.bank-logo-add-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.bank-logo-add-form .input {
+  flex: 1;
+  font-size: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bank-logo-option {
+    animation: none;
+  }
+}
+
 /* ===================== MOBILE ACCOUNTS REDESIGN ===================== */
 
 .mobile-accounts-home {

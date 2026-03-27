@@ -4,7 +4,7 @@ import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { accountsAPI, statsAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
 import { useIsMobile } from '../hooks/useIsMobile';
-import BANK_LOGOS, { getBankById } from '../data/bankLogos';
+import { getBankById, getAllBanks, saveCustomBank } from '../data/bankLogos';
 import { BankLogo } from '../components/BankLogo';
 
 function AccountIcon({ icon, size = 44 }) {
@@ -51,6 +51,9 @@ export default function Accounts() {
     const [subForm, setSubForm] = useState({ name: '', type: 'upi' });
     const [bankSearch, setBankSearch] = useState('');
     const [showBankPicker, setShowBankPicker] = useState(false);
+    const [newBankName, setNewBankName] = useState('');
+    const [showAddBankInput, setShowAddBankInput] = useState(false);
+    const [, setCustomBankTick] = useState(0);
     const [trendData, setTrendData] = useState([]);
     const { addToast, formatCurrency } = useApp();
     const isMobile = useIsMobile();
@@ -502,7 +505,10 @@ export default function Accounts() {
                                         <span>{getBankById(form.icon)?.name || 'Select a bank or icon'}</span>
                                         <ChevronDown size={16} className={showBankPicker ? 'rotated' : ''} />
                                     </button>
-                                    {showBankPicker && (
+                                    {showBankPicker && (() => {
+                                        const q = bankSearch.toLowerCase();
+                                        const filtered = getAllBanks().filter(b => b.name.toLowerCase().includes(q) || b.abbr.toLowerCase().includes(q));
+                                        return (
                                         <div className="bank-logo-picker">
                                             <div className="bank-logo-search">
                                                 <Search size={15} />
@@ -510,31 +516,63 @@ export default function Accounts() {
                                                     className="input"
                                                     placeholder="Search banks..."
                                                     value={bankSearch}
-                                                    onChange={e => setBankSearch(e.target.value)}
+                                                    onChange={e => { setBankSearch(e.target.value); setShowAddBankInput(false); }}
                                                     autoFocus
                                                 />
                                             </div>
                                             <div className="bank-logo-grid">
-                                                {BANK_LOGOS
-                                                    .filter(b => b.name.toLowerCase().includes(bankSearch.toLowerCase()) || b.abbr.toLowerCase().includes(bankSearch.toLowerCase()))
-                                                    .map(b => (
-                                                        <button
-                                                            key={b.id}
-                                                            type="button"
-                                                            className={`bank-logo-option ${form.icon === b.id ? 'selected' : ''}`}
-                                                            onClick={() => {
-                                                                setForm(f => ({ ...f, icon: b.id, color: b.color }));
-                                                                setShowBankPicker(false);
-                                                                setBankSearch('');
-                                                            }}
-                                                        >
-                                                            <BankLogo key={b.id} bank={b} size={38} />
-                                                            <span className="bank-logo-option-name">{b.name}</span>
-                                                        </button>
-                                                    ))}
+                                                {filtered.map((b, idx) => (
+                                                    <button
+                                                        key={b.id}
+                                                        type="button"
+                                                        className={`bank-logo-option ${form.icon === b.id ? 'selected' : ''}`}
+                                                        style={{ animationDelay: `${idx * 30}ms` }}
+                                                        onClick={() => {
+                                                            setForm(f => ({ ...f, icon: b.id, color: b.color }));
+                                                            setShowBankPicker(false);
+                                                            setBankSearch('');
+                                                        }}
+                                                    >
+                                                        <BankLogo key={b.id} bank={b} size={38} />
+                                                        <span className="bank-logo-option-name">{b.name}</span>
+                                                    </button>
+                                                ))}
                                             </div>
+                                            {filtered.length === 0 && bankSearch.trim() && !showAddBankInput && (
+                                                <div className="bank-logo-empty">
+                                                    <span>No banks match "{bankSearch}"</span>
+                                                    <button type="button" className="bank-logo-add-btn" onClick={() => { setNewBankName(bankSearch.trim()); setShowAddBankInput(true); }}>
+                                                        <Plus size={14} /> Add "{bankSearch.trim()}"
+                                                    </button>
+                                                </div>
+                                            )}
+                                            {showAddBankInput && (
+                                                <div className="bank-logo-add-form">
+                                                    <input
+                                                        className="input"
+                                                        placeholder="Bank name"
+                                                        value={newBankName}
+                                                        onChange={e => setNewBankName(e.target.value)}
+                                                        autoFocus
+                                                    />
+                                                    <button type="button" className="btn btn-primary btn-sm" onClick={() => {
+                                                        const bank = saveCustomBank(newBankName);
+                                                        if (bank) {
+                                                            setForm(f => ({ ...f, icon: bank.id, color: bank.color }));
+                                                            setCustomBankTick(t => t + 1);
+                                                            setShowBankPicker(false);
+                                                            setShowAddBankInput(false);
+                                                            setBankSearch('');
+                                                            setNewBankName('');
+                                                            addToast(`"${bank.name}" added`);
+                                                        }
+                                                    }}>Save</button>
+                                                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setShowAddBankInput(false); setNewBankName(''); }}>Cancel</button>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
+                                        );
+                                    })()}
                                 </div>
                                 <div className="input-group">
                                     <label className="input-label">Type</label>

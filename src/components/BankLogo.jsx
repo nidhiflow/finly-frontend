@@ -25,6 +25,7 @@ export function BankLogo({ bank, size = 44, className = "" }) {
             <div
                 className={`bank-logo-tile bank-logo-tile--enter ${className}`}
                 style={{ width: size, height: size }}
+                title={bank.name}
             >
                 <img
                     src={imgSrc}
