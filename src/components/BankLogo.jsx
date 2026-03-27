@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { getBankLogoSources } from "../data/bankLogos";
 
 /**
@@ -7,7 +7,14 @@ import { getBankLogoSources } from "../data/bankLogos";
  */
 export function BankLogo({ bank, size = 44, className = "" }) {
     const [failIndex, setFailIndex] = useState(0);
+    const prevBankId = useRef(bank?.id);
     const sources = useMemo(() => (bank ? getBankLogoSources(bank) : []), [bank]);
+
+    /* Reset fail index when the bank changes (avoids useEffect + setState lint error) */
+    if (bank?.id !== prevBankId.current) {
+        prevBankId.current = bank?.id;
+        if (failIndex !== 0) setFailIndex(0);
+    }
 
     if (!bank) return null;
 
