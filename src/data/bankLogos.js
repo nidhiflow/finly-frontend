@@ -1,26 +1,7 @@
 /**
- * Logo resolution chain (first success wins):
- * 1. Google favicon service (128px, full-color, always works)
- * 2. Local /bank-logos/color/{id}.png (optional override)
- * 3. Initials / emoji (the colored-tile fallback in BankLogo.jsx)
- *
- * Set VITE_DISABLE_REMOTE_LOGOS=true to skip remote sources.
+ * Bank data and helpers for the BankLogo component.
+ * Logos are rendered as inline SVG tiles using each bank's brand color — no external CDN needed.
  */
-export function getBankLogoSources(bank) {
-    if (!bank || bank.isEmoji) return [];
-    const disableRemote =
-        typeof import.meta !== "undefined" &&
-        import.meta.env?.VITE_DISABLE_REMOTE_LOGOS === "true";
-    const list = [];
-    if (bank.logoDomain && !disableRemote) {
-        /* Google S2 favicon — full-color, reliable, 128px */
-        list.push(`https://www.google.com/s2/favicons?sz=128&domain=${bank.logoDomain}`);
-    }
-    if (bank.id) {
-        list.push(`/bank-logos/color/${bank.id}.png`);
-    }
-    return list;
-}
 
 const BANK_LOGOS = [
     /* ── Public Sector Banks ── */
