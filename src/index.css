@@ -7286,3 +7286,161 @@ body.theme-light .bank-logo-tile {
   color: var(--text-muted);
   flex-shrink: 0;
 }
+
+/* ===================== MOBILE V2 TRANSACTIONS ===================== */
+
+.mv2-tx-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: mobileFadeInUp 0.25s ease;
+}
+
+.mv2-tx-type-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.mv2-tx-type-tab {
+  flex: 1;
+  padding: 8px 4px;
+  border: none;
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border: 1px solid var(--border);
+}
+
+.mv2-tx-type-tab.active {
+  background: var(--accent-primary);
+  color: #fff;
+  border-color: var(--accent-primary);
+}
+
+.mv2-tx-type-tab:active {
+  transform: scale(0.96);
+}
+
+.mv2-tx-search-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mv2-tx-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-muted);
+}
+
+.mv2-tx-search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  min-width: 0;
+}
+
+.mv2-tx-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.mv2-tx-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+}
+
+.mv2-tx-filter-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.mv2-tx-filter-btn.active {
+  background: var(--accent-primary-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.mv2-tx-filter-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mv2-tx-summary-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 2px 0;
+}
+
+.mv2-tx-summary-scroll::-webkit-scrollbar { display: none; }
+
+.mv2-tx-summary-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  animation: mobileCardCascade 0.3s ease both;
+}
+
+.mv2-tx-summary-chip.income { color: var(--income); }
+.mv2-tx-summary-chip.expense { color: var(--expense); }
+.mv2-tx-summary-chip.savings { color: var(--accent-primary); }
+
+/* Hide desktop toolbar on mobile transactions */
+@media (max-width: 768px) {
+  .transactions-page--mobile-ledger > .card.page-toolbar-card,
+  .transactions-page--mobile-ledger > .transactions-mobile-ledger-bar,
+  .transactions-page--mobile-ledger > .card.transactions-mobile-hub {
+    display: none;
+  }
+}

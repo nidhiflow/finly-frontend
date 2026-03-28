@@ -249,6 +249,67 @@ export default function Transactions() {
 
     return (
         <div className={`fade-in page-stack transactions-page${isMobile ? ' transactions-page--mobile-ledger' : ''}`}>
+            {isMobile ? (
+                <>
+                    {/* Mobile: Compact type tabs + search */}
+                    <div className="mv2-tx-toolbar">
+                        <div className="mv2-tx-type-tabs">
+                            {[
+                                { value: '', label: 'All' },
+                                { value: 'income', label: 'Income' },
+                                { value: 'expense', label: 'Expense' },
+                                { value: 'transfer', label: 'Transfer' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.value || 'all'}
+                                    type="button"
+                                    className={`mv2-tx-type-tab ${filters.type === tab.value ? 'active' : ''}`}
+                                    onClick={() => {
+                                        const next = { ...filters, type: tab.value };
+                                        setFilters(next);
+                                        syncFiltersToUrl(next);
+                                    }}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="mv2-tx-search-row">
+                            <div className="mv2-tx-search">
+                                <Search size={16} />
+                                <input
+                                    className="mv2-tx-search-input"
+                                    placeholder="Search notes..."
+                                    value={filters.search}
+                                    onChange={(e) => {
+                                        const next = { ...filters, search: e.target.value };
+                                        setFilters(next);
+                                        syncFiltersToUrl(next);
+                                    }}
+                                />
+                                {filters.search && (
+                                    <button className="mv2-tx-search-clear" onClick={() => { const next = { ...filters, search: '' }; setFilters(next); syncFiltersToUrl(next); }}>
+                                        <X size={14} />
+                                    </button>
+                                )}
+                            </div>
+                            <button type="button" className={`mv2-tx-filter-btn ${showFilters ? 'active' : ''}`} onClick={() => setShowFilters(!showFilters)}>
+                                <Filter size={16} />
+                                {activeFilterCount > 0 && <span className="mv2-tx-filter-badge">{activeFilterCount}</span>}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mobile: Compact summary chips */}
+                    <div className="mv2-tx-summary-scroll">
+                        <div className="mv2-tx-summary-chip income"><TrendingUp size={12} /> {formatCurrency(incomeTotal)}</div>
+                        <div className="mv2-tx-summary-chip expense"><TrendingDown size={12} /> {formatCurrency(expenseTotal)}</div>
+                        <div className="mv2-tx-summary-chip savings"><PiggyBank size={12} /> {formatCurrency(savingsTotal)}</div>
+                        <div className="mv2-tx-summary-chip">{transactions.length} items</div>
+                    </div>
+                </>
+            ) : (
+            <>
             <div className="card page-toolbar-card">
                 <div className="page-toolbar-header">
                     <div>
@@ -302,51 +363,7 @@ export default function Transactions() {
                 </div>
             </div>
             </div>
-
-            {isMobile && (
-                <div className="card transactions-mobile-ledger-bar">
-                    <div className="transactions-mobile-type-tabs" role="tablist" aria-label="Transaction type">
-                        {[
-                            { value: '', label: 'All' },
-                            { value: 'income', label: 'Income' },
-                            { value: 'expense', label: 'Expense' },
-                            { value: 'transfer', label: 'Transfer' },
-                        ].map((tab) => (
-                            <button
-                                key={tab.value || 'all'}
-                                type="button"
-                                role="tab"
-                                aria-selected={filters.type === tab.value}
-                                className={`transactions-mobile-type-tab ${filters.type === tab.value ? 'active' : ''}`}
-                                onClick={() => {
-                                    const next = { ...filters, type: tab.value };
-                                    setFilters(next);
-                                    syncFiltersToUrl(next);
-                                }}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="transactions-mobile-ledger-tools">
-                        <div className="search-input-wrapper transactions-search-box">
-                            <Search size={18} />
-                            <input
-                                className="input"
-                                placeholder="Search notes..."
-                                value={filters.search}
-                                onChange={(e) => {
-                                    const next = { ...filters, search: e.target.value };
-                                    setFilters(next);
-                                    syncFiltersToUrl(next);
-                                }}
-                            />
-                        </div>
-                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowFilters(!showFilters)} title="More filters">
-                            <Filter size={16} />
-                        </button>
-                    </div>
-                </div>
+            </>
             )}
 
             {showFilters && (
@@ -382,35 +399,7 @@ export default function Transactions() {
                 </div>
             )}
 
-            {isMobile ? (
-                <div className="card transactions-mobile-hub">
-                    <div className="transactions-mobile-hub-head">
-                        <div>
-                            <div className="page-toolbar-subtitle">Mobile shortcuts</div>
-                            <div className="dashboard-section-note">Keep the ledger clear and move secondary tools into quick panels.</div>
-                        </div>
-                    </div>
-                    <div className="transactions-mobile-hub-actions">
-                        <button type="button" className={`btn btn-sm ${mobilePanel === 'bookmarks' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMobilePanel(mobilePanel === 'bookmarks' ? '' : 'bookmarks')}>
-                            <Bookmark size={14} /> Bookmarks
-                        </button>
-                        <button type="button" className={`btn btn-sm ${mobilePanel === 'recurring' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMobilePanel(mobilePanel === 'recurring' ? '' : 'recurring')}>
-                            <Repeat size={14} /> Recurring
-                        </button>
-                        <button type="button" className={`btn btn-sm ${mobilePanel === 'suggestions' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMobilePanel(mobilePanel === 'suggestions' ? '' : 'suggestions')}>
-                            <Sparkles size={14} /> Quick add
-                        </button>
-                    </div>
-                    <div className="dashboard-chip-list">
-                        <button type="button" className="dashboard-data-chip">
-                            <span>{activeFilterCount} filters active</span>
-                        </button>
-                        <button type="button" className="dashboard-data-chip">
-                            <span>{transactions.length} items in view</span>
-                        </button>
-                    </div>
-                </div>
-            ) : (
+            {!isMobile && (
             <div className="stats-grid transactions-review-stats">
                 {reviewCards.map((card) => {
                     const Icon = card.icon;
@@ -542,6 +531,7 @@ export default function Transactions() {
 
             <div className="transactions-workspace">
                 <div className="transactions-main-column">
+                    {!isMobile && (
                     <div className="dashboard-section-heading">
                         <div>
                             <div className="dashboard-section-kicker">Timeline</div>
@@ -549,6 +539,7 @@ export default function Transactions() {
                             <div className="dashboard-section-note">A date-grouped review of everything in the current view.</div>
                         </div>
                     </div>
+                    )}
 
                     {hasTransactions ? (
                         Object.entries(grouped).map(([date, txs]) => (
