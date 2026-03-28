@@ -254,87 +254,78 @@ export default function Accounts() {
     return (
         <div className="fade-in page-stack accounts-page">
             {isMobile ? (
-                <div className="mobile-accounts-home">
-                    <div className="mobile-accounts-header">
-                        <div>
-                            <div className="dashboard-section-kicker" style={{ color: 'var(--accent-secondary)' }}>Accounts</div>
-                            <div className="dashboard-section-title">Where your money lives</div>
-                            <div className="dashboard-section-note">Track bank accounts, savings, cash, cards, and grouped sub-accounts in one place.</div>
-                        </div>
-                        <button className="btn btn-primary btn-sm" onClick={openAdd}>
-                            <Plus size={16} /> Add Account
-                        </button>
-                    </div>
-
-                    <div className="mobile-hero-card">
-                        <div className="mobile-hero-top">
-                            <div className="mobile-hero-left">
-                                <div className="mobile-hero-label">NET WORTH</div>
-                                <div className="mobile-hero-balance">{formatCurrency(totalNetWorth)}</div>
-                                <div className="mobile-hero-message" style={{ marginBottom: 0 }}>
-                                    {mainAccounts.length} primary account{mainAccounts.length !== 1 ? 's' : ''} across assets, savings, cash, cards, and liabilities.
-                                </div>
+                <div className="mv2-dashboard" style={{ gap: 14 }}>
+                    {/* Hero */}
+                    <div className="mv2-hero">
+                        <div className="mv2-hero-content">
+                            <div className="mv2-hero-label">NET WORTH</div>
+                            <div className="mv2-hero-amount">{formatCurrency(totalNetWorth)}</div>
+                            <div className="mv2-hero-message" style={{ marginBottom: 8 }}>
+                                {mainAccounts.length} account{mainAccounts.length !== 1 ? 's' : ''}
                             </div>
-                            {trendData.length > 1 && (
-                                <div className="mobile-hero-chart-area">
-                                    <ResponsiveContainer width="100%" height={80}>
-                                        <AreaChart data={trendData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-                                            <defs>
-                                                <linearGradient id="accHeroGrad" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stopColor={heroChartColor} stopOpacity={0.4} />
-                                                    <stop offset="100%" stopColor={heroChartColor} stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <Area type="monotone" dataKey="net" stroke={heroChartColor} strokeWidth={2}
-                                                fill="url(#accHeroGrad)" dot={false} isAnimationActive animationDuration={800} animationEasing="ease-out" />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            )}
+                            <div className="mv2-hero-stats">
+                                <span className="mv2-hero-stat income"><TrendingUp size={12} /> {formatCurrency(totalAssets)}</span>
+                                <span className="mv2-hero-stat expense"><TrendingDown size={12} /> {formatCurrency(totalLiabilities)}</span>
+                            </div>
                         </div>
-                        <button className="mobile-hero-chart-link" onClick={() => {}}>
-                            Last 7 days <ChevronRight size={12} />
-                        </button>
+                        {trendData.length > 1 && (
+                            <div className="mv2-hero-chart">
+                                <ResponsiveContainer width="100%" height={64}>
+                                    <AreaChart data={trendData} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+                                        <defs>
+                                            <linearGradient id="accHeroGrad" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor={heroChartColor} stopOpacity={0.35} />
+                                                <stop offset="100%" stopColor={heroChartColor} stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <Area type="monotone" dataKey="net" stroke={heroChartColor} strokeWidth={2}
+                                            fill="url(#accHeroGrad)" dot={false} isAnimationActive animationDuration={600} />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
                     </div>
 
-                    <div className="mobile-tx-flow">
-                        <span className="flow-item income"><Landmark size={13} /> ASSETS {formatCurrency(totalAssets)}</span>
-                        <span className="flow-arrow">→</span>
-                        <span className="flow-item expense">{formatCurrency(totalLiabilities)}</span>
-                        <span className="flow-arrow">→</span>
-                        <span className="flow-item balance">{formatCurrency(totalNetWorth)}</span>
-                    </div>
+                    {/* Add Account Button */}
+                    <button className="mv2-add-account-btn" onClick={openAdd}>
+                        <Plus size={18} /> Add Account
+                    </button>
 
-                    <div className="mobile-accounts-list">
+                    {/* Accounts List */}
+                    <div className="mv2-section">
+                        <div className="mv2-section-head">
+                            <span className="mv2-section-title">Your Accounts</span>
+                            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{mainAccounts.length}</span>
+                        </div>
                         {mainAccounts.length === 0 ? (
-                            <div className="card" style={{ padding: 32, textAlign: 'center' }}>
-                                <div style={{ fontSize: 48, marginBottom: 12 }}>🏦</div>
-                                <h3>No accounts yet</h3>
-                                <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Add your first account to start tracking.</p>
-                                <button className="btn btn-primary btn-sm" onClick={openAdd} style={{ marginTop: 16 }}>
+                            <div className="mv2-empty">
+                                <div style={{ fontSize: 40 }}>🏦</div>
+                                <p>No accounts yet</p>
+                                <button className="btn btn-primary btn-sm" onClick={openAdd}>
                                     <Plus size={16} /> Add Account
                                 </button>
                             </div>
-                        ) : mainAccounts.map(acc => {
-                            const balanceValue = parseFloat(acc.balance || 0) || 0;
-                            const typeLabel = accountTypes.find(t => t.value === acc.type)?.label || acc.type.replace('_', ' ');
-                            return (
-                                <button key={acc.id} type="button" className="mobile-account-row" onClick={() => openEdit(acc)}>
-                                    <AccountIcon icon={acc.icon} size={44} />
-                                    <div className="mobile-account-info">
-                                        <div className="mobile-account-name">{acc.name}</div>
-                                        <div className="mobile-account-type">{typeLabel}</div>
-                                    </div>
-                                    <div className="mobile-account-right">
-                                        <div className={`mobile-account-balance ${balanceValue >= 0 ? 'positive' : 'negative'}`}>
-                                            {formatCurrency(acc.balance)}
-                                        </div>
-                                        <div className="mobile-account-tag">{typeLabel}</div>
-                                    </div>
-                                    <ChevronRight size={18} className="mobile-account-chevron" />
-                                </button>
-                            );
-                        })}
+                        ) : (
+                            <div className="mv2-tx-list">
+                                {mainAccounts.map((acc, i) => {
+                                    const balanceValue = parseFloat(acc.balance || 0) || 0;
+                                    const typeLabel = accountTypes.find(t => t.value === acc.type)?.label || acc.type.replace('_', ' ');
+                                    return (
+                                        <button key={acc.id} className="mv2-tx-row" onClick={() => openEdit(acc)}
+                                            style={{ animationDelay: `${i * 0.04}s` }}>
+                                            <AccountIcon icon={acc.icon} size={40} />
+                                            <div className="mv2-tx-info">
+                                                <div className="mv2-tx-name">{acc.name}</div>
+                                                <div className="mv2-tx-note">{typeLabel}</div>
+                                            </div>
+                                            <div className={`mv2-tx-amount ${balanceValue >= 0 ? 'income' : 'expense'}`}>
+                                                {formatCurrency(acc.balance)}
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 </div>
             ) : (
