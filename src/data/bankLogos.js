@@ -1,22 +1,23 @@
-/** Clearbit Logo API (linked at runtime, not bundled). Set VITE_DISABLE_CLEARBIT_LOGOS=true to skip. */
-const CLEARBIT_BASE = "https://logo.clearbit.com";
-
+/**
+ * Logo resolution chain (first success wins):
+ * 1. Google favicon service (128px, full-color, always works)
+ * 2. Local /bank-logos/color/{id}.png (optional override)
+ * 3. Initials / emoji (the colored-tile fallback in BankLogo.jsx)
+ *
+ * Set VITE_DISABLE_REMOTE_LOGOS=true to skip remote sources.
+ */
 export function getBankLogoSources(bank) {
     if (!bank || bank.isEmoji) return [];
-    const disableClearbit =
+    const disableRemote =
         typeof import.meta !== "undefined" &&
-        import.meta.env?.VITE_DISABLE_CLEARBIT_LOGOS === "true";
+        import.meta.env?.VITE_DISABLE_REMOTE_LOGOS === "true";
     const list = [];
-    if (bank.logoDomain && !disableClearbit) {
-        list.push(`${CLEARBIT_BASE}/${bank.logoDomain}`);
+    if (bank.logoDomain && !disableRemote) {
+        /* Google S2 favicon — full-color, reliable, 128px */
+        list.push(`https://www.google.com/s2/favicons?sz=128&domain=${bank.logoDomain}`);
     }
     if (bank.id) {
         list.push(`/bank-logos/color/${bank.id}.png`);
-    }
-    if (bank.logoSrc) list.push(bank.logoSrc);
-    const hex = (bank.color || "#6366f1").replace(/^#/, "");
-    if (bank.simpleIconSlug) {
-        list.push(`https://cdn.simpleicons.org/${bank.simpleIconSlug}/${hex}`);
     }
     return list;
 }
@@ -37,9 +38,9 @@ const BANK_LOGOS = [
     { id: "maha", name: "Bank of Maharashtra", abbr: "BOM", color: "#006838", textColor: "#fff", logoDomain: "bankofmaharashtra.in" },
 
     /* ── Private Sector Banks ── */
-    { id: "hdfc", name: "HDFC Bank", abbr: "HDFC", color: "#004B87", textColor: "#fff", logoDomain: "hdfcbank.com", logoSrc: "/bank-logos/hdfc.svg" },
-    { id: "icici", name: "ICICI Bank", abbr: "ICICI", color: "#F37A21", textColor: "#fff", logoDomain: "icicibank.com", logoSrc: "/bank-logos/icici.svg" },
-    { id: "axis", name: "Axis Bank", abbr: "AXIS", color: "#800020", textColor: "#fff", logoDomain: "axisbank.com", logoSrc: "/bank-logos/axis.svg" },
+    { id: "hdfc", name: "HDFC Bank", abbr: "HDFC", color: "#004B87", textColor: "#fff", logoDomain: "hdfcbank.com" },
+    { id: "icici", name: "ICICI Bank", abbr: "ICICI", color: "#F37A21", textColor: "#fff", logoDomain: "icicibank.com" },
+    { id: "axis", name: "Axis Bank", abbr: "AXIS", color: "#800020", textColor: "#fff", logoDomain: "axisbank.com" },
     { id: "kotak", name: "Kotak Mahindra Bank", abbr: "KMB", color: "#ED1C24", textColor: "#fff", logoDomain: "kotak.com" },
     { id: "yes", name: "Yes Bank", abbr: "YES", color: "#003B70", textColor: "#fff", logoDomain: "yesbank.in" },
     { id: "indusind", name: "IndusInd Bank", abbr: "IIB", color: "#8B1A1A", textColor: "#fff", logoDomain: "indusind.com" },
@@ -69,27 +70,27 @@ const BANK_LOGOS = [
     { id: "suryoday", name: "Suryoday Small Finance Bank", abbr: "SUR", color: "#F7941D", textColor: "#fff", logoDomain: "suryodaybank.com" },
     { id: "utkarsh", name: "Utkarsh Small Finance Bank", abbr: "UTK", color: "#0071BC", textColor: "#fff", logoDomain: "utkarsh.bank" },
     { id: "northeast", name: "North East Small Finance Bank", abbr: "NE", color: "#00A859", textColor: "#fff", logoDomain: "nesfb.com" },
-    { id: "paytm", name: "Paytm Payments Bank", abbr: "PTM", color: "#00BAF2", textColor: "#fff", logoDomain: "paytmbank.com", logoSrc: "/bank-logos/paytm.svg" },
-    { id: "airtel", name: "Airtel Payments Bank", abbr: "APB", color: "#ED1C24", textColor: "#fff", logoDomain: "airtel.in", logoSrc: "/bank-logos/airtel.svg" },
+    { id: "paytm", name: "Paytm Payments Bank", abbr: "PTM", color: "#00BAF2", textColor: "#fff", logoDomain: "paytmbank.com" },
+    { id: "airtel", name: "Airtel Payments Bank", abbr: "APB", color: "#ED1C24", textColor: "#fff", logoDomain: "airtel.in" },
     { id: "fino", name: "Fino Payments Bank", abbr: "FINO", color: "#E31937", textColor: "#fff", logoDomain: "finobank.com" },
     { id: "indiapost", name: "India Post Payments Bank", abbr: "IPPB", color: "#E31E24", textColor: "#fff", logoDomain: "ippbonline.com" },
-    { id: "jio", name: "Jio Payments Bank", abbr: "JIO", color: "#0A3B7E", textColor: "#fff", logoDomain: "jio.com", logoSrc: "/bank-logos/jio.svg" },
+    { id: "jio", name: "Jio Payments Bank", abbr: "JIO", color: "#0A3B7E", textColor: "#fff", logoDomain: "jio.com" },
 
     /* ── Neo / Digital Banks ── */
-    { id: "fi", name: "Fi Money", abbr: "Fi", color: "#6C3FEE", textColor: "#fff", logoDomain: "fi.money", logoSrc: "/bank-logos/fi.svg" },
+    { id: "fi", name: "Fi Money", abbr: "Fi", color: "#6C3FEE", textColor: "#fff", logoDomain: "fi.money" },
     { id: "jupiter", name: "Jupiter", abbr: "JUP", color: "#5539CC", textColor: "#fff", logoDomain: "jupiter.money" },
     { id: "niyo", name: "Niyo", abbr: "NIYO", color: "#FF5722", textColor: "#fff", logoDomain: "goniyo.com" },
 
     /* ── Foreign Banks ── */
     { id: "citi", name: "Citibank", abbr: "CITI", color: "#003B70", textColor: "#fff", logoDomain: "citigroup.com" },
-    { id: "hsbc", name: "HSBC", abbr: "HSBC", color: "#DB0011", textColor: "#fff", logoDomain: "hsbc.co.in", logoSrc: "/bank-logos/hsbc.svg" },
+    { id: "hsbc", name: "HSBC", abbr: "HSBC", color: "#DB0011", textColor: "#fff", logoDomain: "hsbc.co.in" },
     { id: "sc", name: "Standard Chartered", abbr: "SC", color: "#0072AA", textColor: "#fff", logoDomain: "sc.com" },
-    { id: "deutsche", name: "Deutsche Bank", abbr: "DB", color: "#0018A8", textColor: "#fff", logoDomain: "db.com", logoSrc: "/bank-logos/deutsche.svg" },
-    { id: "barclays", name: "Barclays", abbr: "BRC", color: "#00AEEF", textColor: "#fff", logoDomain: "barclays.com", logoSrc: "/bank-logos/barclays.svg" },
+    { id: "deutsche", name: "Deutsche Bank", abbr: "DB", color: "#0018A8", textColor: "#fff", logoDomain: "db.com" },
+    { id: "barclays", name: "Barclays", abbr: "BRC", color: "#00AEEF", textColor: "#fff", logoDomain: "barclays.com" },
     { id: "dbs", name: "DBS Bank", abbr: "DBS", color: "#E21A22", textColor: "#fff", logoDomain: "dbs.com" },
-    { id: "jpmorgan", name: "JP Morgan Chase", abbr: "JPM", color: "#117ACA", textColor: "#fff", logoDomain: "jpmorganchase.com", logoSrc: "/bank-logos/jpmorgan.svg" },
-    { id: "boa", name: "Bank of America", abbr: "BOA", color: "#012169", textColor: "#fff", logoDomain: "bankofamerica.com", logoSrc: "/bank-logos/boa.svg" },
-    { id: "wells", name: "Wells Fargo", abbr: "WF", color: "#D71E28", textColor: "#fff", logoDomain: "wellsfargo.com", logoSrc: "/bank-logos/wells.svg" },
+    { id: "jpmorgan", name: "JP Morgan Chase", abbr: "JPM", color: "#117ACA", textColor: "#fff", logoDomain: "jpmorganchase.com" },
+    { id: "boa", name: "Bank of America", abbr: "BOA", color: "#012169", textColor: "#fff", logoDomain: "bankofamerica.com" },
+    { id: "wells", name: "Wells Fargo", abbr: "WF", color: "#D71E28", textColor: "#fff", logoDomain: "wellsfargo.com" },
     { id: "goldman", name: "Goldman Sachs", abbr: "GS", color: "#7399C6", textColor: "#fff", logoDomain: "goldmansachs.com" },
     { id: "morgan_stanley", name: "Morgan Stanley", abbr: "MS", color: "#002D62", textColor: "#fff", logoDomain: "morganstanley.com" },
     { id: "ubs", name: "UBS", abbr: "UBS", color: "#E60000", textColor: "#fff", logoDomain: "ubs.com" },
