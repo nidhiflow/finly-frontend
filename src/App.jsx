@@ -855,6 +855,7 @@ function AppLayout() {
 
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const pageTitle = navItems.find(n => n.path === location.pathname)?.label || 'Finly';
   const isSecondaryPage = !primaryNavItems.some(item => item.path === location.pathname);
 
@@ -967,7 +968,7 @@ function AppLayout() {
         </div>
       </main>
 
-      {/* Mobile slide-out sidebar */}
+      {/* Mobile slide-out sidebar (kept for hamburger menu, hidden by default) */}
       {mobileNavOpen && (
         <div className="mobile-nav-backdrop" onClick={() => setMobileNavOpen(false)} />
       )}
@@ -1024,30 +1025,75 @@ function AppLayout() {
       {/* Mobile Search Overlay */}
       {mobileSearchOpen && <MobileSearchOverlay onClose={() => setMobileSearchOpen(false)} />}
 
+      {/* Mobile More Bottom Sheet */}
+      {mobileMoreOpen && (
+        <>
+          <div className="mobile-sheet-backdrop" onClick={() => setMobileMoreOpen(false)} />
+          <div className="mobile-sheet">
+            <div className="mobile-sheet-handle" />
+            <div className="mobile-sheet-header">
+              <span className="mobile-sheet-title">More</span>
+              <button className="btn btn-ghost btn-sm btn-icon" onClick={() => setMobileMoreOpen(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="mobile-sheet-body">
+              <div className="mobile-more-grid">
+                {secondaryNavItems.map(item => (
+                  <button
+                    key={item.path}
+                    className={`mobile-more-item ${location.pathname === item.path ? 'active' : ''}`}
+                    onClick={() => { navigate(item.path); setMobileMoreOpen(false); }}
+                  >
+                    <span className="mobile-more-icon"><item.icon size={20} /></span>
+                    {item.label}
+                  </button>
+                ))}
+                <button
+                  className="mobile-more-item"
+                  onClick={() => { toggleTheme(); setMobileMoreOpen(false); }}
+                >
+                  <span className="mobile-more-icon">
+                    {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                  </span>
+                  {theme === 'dark' ? 'Light' : 'Dark'}
+                </button>
+                <button
+                  className="mobile-more-item"
+                  onClick={() => { setMobileMoreOpen(false); setMobileSearchOpen(true); }}
+                >
+                  <span className="mobile-more-icon"><Search size={20} /></span>
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Mobile Bottom Navigation */}
       <nav className="bottom-nav" aria-label="Primary mobile navigation">
         <NavLink to="/" end className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
-          <LayoutDashboard size={18} />
+          <LayoutDashboard size={20} />
           <span>Home</span>
         </NavLink>
         <NavLink to="/transactions" end className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
-          <ArrowLeftRight size={18} />
+          <ArrowLeftRight size={20} />
           <span>Ledger</span>
         </NavLink>
-        <button type="button" className="bottom-nav-item bottom-nav-add" onClick={() => navigate('/add')}>
-          <Plus size={20} />
-          <span>Add</span>
+        <button type="button" className="bottom-nav-fab" onClick={() => navigate('/add')}>
+          <Plus size={24} />
         </button>
         <NavLink to="/charts" end className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
-          <BarChart3 size={18} />
+          <BarChart3 size={20} />
           <span>Reports</span>
         </NavLink>
         <button
           type="button"
-          className={`bottom-nav-item ${mobileNavOpen || isSecondaryPage ? 'active' : ''}`}
-          onClick={() => setMobileNavOpen(true)}
+          className={`bottom-nav-item ${mobileMoreOpen || isSecondaryPage ? 'active' : ''}`}
+          onClick={() => setMobileMoreOpen(true)}
         >
-          <MoreHorizontal size={18} />
+          <MoreHorizontal size={20} />
           <span>More</span>
         </button>
       </nav>

@@ -489,160 +489,130 @@ export default function Dashboard() {
             </div>
 
             {isMobile ? (
-                <div className="dashboard-mobile-home">
-                    {/* Compact month navigation */}
-                    <div className="mobile-month-nav">
-                        <button className="btn btn-ghost btn-sm btn-icon" onClick={prevMonth}><ChevronLeft size={16} /></button>
-                        <button className="mobile-month-label" onClick={goToToday}>{formatMonth(currentMonth)}</button>
-                        <button className="btn btn-ghost btn-sm btn-icon" onClick={nextMonth}><ChevronRight size={16} /></button>
+                <div className="mv2-dashboard">
+                    {/* Month Navigation */}
+                    <div className="mv2-month-nav">
+                        <button className="mv2-month-arrow" onClick={prevMonth}><ChevronLeft size={18} /></button>
+                        <button className="mv2-month-label" onClick={goToToday}>{formatMonth(currentMonth)}</button>
+                        <button className="mv2-month-arrow" onClick={nextMonth}><ChevronRight size={18} /></button>
                     </div>
 
                     {/* Hero Balance Card */}
-                    <div className="mobile-hero-card">
-                        <div className="mobile-hero-top">
-                            <div className="mobile-hero-left">
-                                <div className="mobile-hero-balance">{formatCurrency(summary.balance)}</div>
-                                <div className="mobile-hero-message">{mobileMotivation.text} {mobileMotivation.emoji}</div>
-                                <div className="mobile-hero-pills">
-                                    <span className="mobile-hero-pill income">
-                                        <TrendingUp size={13} /> +{formatCurrency(summary.income)}
-                                    </span>
-                                    <span className="mobile-hero-pill expense">
-                                        — -{formatCurrency(summary.expense)}
-                                    </span>
-                                </div>
+                    <div className="mv2-hero">
+                        <div className="mv2-hero-content">
+                            <div className="mv2-hero-label">Net Balance</div>
+                            <div className="mv2-hero-amount">{formatCurrency(summary.balance)}</div>
+                            <div className="mv2-hero-message">{mobileMotivation.text} {mobileMotivation.emoji}</div>
+                            <div className="mv2-hero-stats">
+                                <span className="mv2-hero-stat income"><TrendingUp size={12} /> {formatCurrency(summary.income)}</span>
+                                <span className="mv2-hero-stat expense"><TrendingDown size={12} /> {formatCurrency(summary.expense)}</span>
                             </div>
-                            {mobileChartData.length > 1 && (
-                                <div className="mobile-hero-chart-area">
-                                    <ResponsiveContainer width="100%" height={80}>
-                                        <AreaChart data={mobileChartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-                                            <defs>
-                                                <linearGradient id="mobileHeroGrad" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stopColor={trendColor} stopOpacity={0.4} />
-                                                    <stop offset="100%" stopColor={trendColor} stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <Area
-                                                type="monotone"
-                                                dataKey="net"
-                                                stroke={trendColor}
-                                                strokeWidth={2}
-                                                fill="url(#mobileHeroGrad)"
-                                                dot={false}
-                                                isAnimationActive={true}
-                                                animationDuration={800}
-                                                animationEasing="ease-out"
-                                            />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            )}
                         </div>
-                        <button className="mobile-hero-chart-link" onClick={() => navigate('/charts')}>
-                            Last 7 days <ChevronRight size={12} />
+                        {mobileChartData.length > 1 && (
+                            <div className="mv2-hero-chart">
+                                <ResponsiveContainer width="100%" height={64}>
+                                    <AreaChart data={mobileChartData} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+                                        <defs>
+                                            <linearGradient id="mv2HeroGrad" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor={trendColor} stopOpacity={0.35} />
+                                                <stop offset="100%" stopColor={trendColor} stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <Area type="monotone" dataKey="net" stroke={trendColor} strokeWidth={2}
+                                            fill="url(#mv2HeroGrad)" dot={false} isAnimationActive animationDuration={600} />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="mv2-quick-actions">
+                        <button className="mv2-quick-btn" onClick={() => navigate('/add?type=expense')}>
+                            <span className="mv2-quick-icon expense"><TrendingDown size={18} /></span>
+                            <span>Expense</span>
+                        </button>
+                        <button className="mv2-quick-btn" onClick={() => navigate('/add?type=income')}>
+                            <span className="mv2-quick-icon income"><TrendingUp size={18} /></span>
+                            <span>Income</span>
+                        </button>
+                        <button className="mv2-quick-btn" onClick={() => navigate('/add?type=transfer')}>
+                            <span className="mv2-quick-icon transfer"><ArrowRight size={18} /></span>
+                            <span>Transfer</span>
+                        </button>
+                        <button className="mv2-quick-btn" onClick={() => navigate('/accounts')}>
+                            <span className="mv2-quick-icon accounts"><Wallet size={18} /></span>
+                            <span>Accounts</span>
                         </button>
                     </div>
 
-                    {/* Smart Insights */}
+                    {/* Insight Chips (horizontal scroll) */}
                     {mobileInsightItems.length > 0 && isCurrentMonthView && (
-                        <div className="card mobile-insights-card">
-                            <button type="button" className="mobile-insights-toggle" onClick={() => setMobileInsightsOpen(!mobileInsightsOpen)}>
-                                <span className="mobile-insights-title">Smart Insights</span>
-                                <ChevronDown size={18} className={`mobile-insights-chevron ${mobileInsightsOpen ? 'open' : ''}`} />
-                            </button>
-                            {mobileInsightsOpen && (
-                                <div className="mobile-insights-list">
-                                    {mobileInsightItems.map((item, i) => (
-                                        <div key={i} className="mobile-insight-item">
-                                            <span className="mobile-insight-icon">{item.icon}</span>
-                                            <div>
-                                                <div className="mobile-insight-text">{item.text}</div>
-                                                <div className="mobile-insight-sub">{item.sub}</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    <button type="button" className="mobile-insight-link" onClick={() => navigate('/charts')}>
-                                        Where did my money go? <ArrowRight size={14} />
-                                    </button>
+                        <div className="mv2-insight-scroll">
+                            {mobileInsightItems.map((item, i) => (
+                                <div key={i} className="mv2-insight-chip" style={{ animationDelay: `${i * 0.08}s` }}>
+                                    <span className="mv2-insight-emoji">{item.icon}</span>
+                                    <span className="mv2-insight-label">{item.text}</span>
                                 </div>
-                            )}
+                            ))}
                         </div>
                     )}
 
-                    {/* Quick Action Buttons */}
-                    <div className="mobile-quick-actions">
-                        <button className="mobile-quick-btn expense" onClick={() => navigate('/add')}>
-                            <Plus size={15} /> Expense
-                        </button>
-                        <button className="mobile-quick-btn income" onClick={() => navigate('/add')}>
-                            <Plus size={15} /> Income
-                        </button>
-                        <button className="mobile-quick-btn transfer" onClick={() => navigate('/add')}>
-                            <Plus size={15} /> Transfer
-                        </button>
-                    </div>
-
                     {/* Recent Transactions */}
-                    <div className="card mobile-tx-card">
-                        <div className="mobile-tx-header">
-                            <span className="mobile-tx-title">Recent transactions</span>
-                            <button type="button" className="mobile-tx-viewall" onClick={() => navigate('/transactions')}>
+                    <div className="mv2-section">
+                        <div className="mv2-section-head">
+                            <span className="mv2-section-title">Recent</span>
+                            <button className="mv2-section-link" onClick={() => navigate('/transactions')}>
                                 View All <ChevronRight size={13} />
                             </button>
                         </div>
-                        <div className="mobile-tx-flow">
-                            <span className="flow-item income">{formatCurrency(summary.income)}</span>
-                            <span className="flow-arrow">→</span>
-                            <span className="flow-item expense">{formatCurrency(summary.expense)}</span>
-                            <span className="flow-arrow">→</span>
-                            <span className="flow-item balance">{formatCurrency(summary.balance)}</span>
-                        </div>
                         {recentTx.length > 0 ? (
-                            <div className="tx-list">
-                                {recentTx.slice(0, 5).map(tx => (
-                                    <div key={tx.id} className="tx-item" onClick={() => navigate(`/add?edit=${tx.id}`)}>
-                                        <div className="tx-icon" style={{ background: tx.category_color ? `${tx.category_color}20` : 'var(--bg-input)' }}>
+                            <div className="mv2-tx-list">
+                                {recentTx.slice(0, 4).map((tx, i) => (
+                                    <button key={tx.id} className="mv2-tx-row" onClick={() => navigate(`/add?edit=${tx.id}`)}
+                                        style={{ animationDelay: `${i * 0.05}s` }}>
+                                        <div className="mv2-tx-icon" style={{ background: tx.category_color ? `${tx.category_color}18` : 'var(--bg-input)' }}>
                                             {tx.category_icon || (tx.type === 'income' ? '💰' : '💸')}
                                         </div>
-                                        <div className="tx-info">
-                                            <div className="tx-category">{tx.category_name || tx.type}</div>
-                                            <div className="tx-note">{tx.note || new Date(tx.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}</div>
+                                        <div className="mv2-tx-info">
+                                            <div className="mv2-tx-name">{tx.category_name || tx.type}</div>
+                                            <div className="mv2-tx-note">{tx.note || new Date(tx.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}</div>
                                         </div>
-                                        <div className="tx-amount-col">
-                                            <div className={`tx-amount ${tx.type}`}>
-                                                {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
-                                            </div>
-                                            <div className="tx-account">{tx.account_parent_name || tx.account_name}</div>
+                                        <div className={`mv2-tx-amount ${tx.type}`}>
+                                            {tx.type === 'income' ? '+' : '−'}{formatCurrency(tx.amount)}
                                         </div>
-                                    </div>
+                                    </button>
                                 ))}
                             </div>
                         ) : (
-                            <div className="empty-state" style={{ padding: '20px' }}>
-                                <p>No transactions for this period</p>
-                                <button className="btn btn-primary btn-sm" onClick={() => navigate('/add')} style={{ marginTop: 12 }}>
-                                    <Plus size={16} /> Add Transaction
+                            <div className="mv2-empty">
+                                <p>No transactions yet</p>
+                                <button className="btn btn-primary btn-sm" onClick={() => navigate('/add')}>
+                                    <Plus size={16} /> Add one
                                 </button>
                             </div>
                         )}
                     </div>
 
-                    {/* Planner Cards */}
-                    <div className="dashboard-planner-grid">
-                        {plannerCards.map((card) => {
-                            const Icon = card.icon;
-                            return (
-                                <button key={card.key} type="button" className={`planner-card ${card.tone || 'neutral'}`} onClick={card.action}>
-                                    <div className="planner-card-top">
-                                        <span className="planner-card-icon"><Icon size={18} /></span>
-                                        <span className="planner-card-label">{card.label}</span>
-                                    </div>
-                                    <div className="planner-card-value">{card.value}</div>
-                                    <div className="planner-card-note">{card.note}</div>
-                                </button>
-                            );
-                        })}
-                    </div>
+                    {/* Finly Score Mini */}
+                    {finlyScore && isCurrentMonthView && (
+                        <button className="mv2-score-pill" onClick={() => navigate('/charts')}>
+                            <div className="mv2-score-ring" style={{ '--score-color': scoreColor, '--score-pct': `${clampedScore}%` }}>
+                                <svg viewBox="0 0 36 36" className="mv2-score-svg">
+                                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" strokeWidth="3" />
+                                    <circle cx="18" cy="18" r="15.9" fill="none" stroke={scoreColor} strokeWidth="3"
+                                        strokeDasharray="100" strokeDashoffset={100 - clampedScore}
+                                        strokeLinecap="round" transform="rotate(-90 18 18)" />
+                                </svg>
+                                <span className="mv2-score-num">{clampedScore}</span>
+                            </div>
+                            <div className="mv2-score-text">
+                                <div className="mv2-score-label">Finly Score</div>
+                                <div className="mv2-score-sub" style={{ color: scoreColor }}>{scoreLabel}</div>
+                            </div>
+                            <ChevronRight size={16} style={{ color: 'var(--text-muted)' }} />
+                        </button>
+                    )}
                 </div>
             ) : (
             <>
