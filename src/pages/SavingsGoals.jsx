@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Trash2, Edit3, CalendarDays, Target, Wallet, ArrowRight, PiggyBank, Zap, Tag, Building2 } from 'lucide-react';
 import { savingsGoalsAPI, categoriesAPI, accountsAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export default function SavingsGoals() {
     const [goals, setGoals] = useState([]);
@@ -177,8 +178,11 @@ export default function SavingsGoals() {
         },
     ];
 
+    const isMobile = useIsMobile();
+
     return (
         <div className="fade-in page-stack goals-page">
+            {!isMobile && (
             <div className="card page-toolbar-card">
                 <div className="page-toolbar-header">
                     <div>
@@ -191,6 +195,7 @@ export default function SavingsGoals() {
                     </button>
                 </div>
             </div>
+            )}
 
             <div className="card goals-overview-hero">
                 <div className="goals-overview-head">
@@ -218,6 +223,7 @@ export default function SavingsGoals() {
                 </div>
             </div>
 
+            {!isMobile && (
             <div className="dashboard-planner-grid">
                 {plannerCards.map((card) => {
                     const Icon = card.icon;
@@ -233,7 +239,9 @@ export default function SavingsGoals() {
                     );
                 })}
             </div>
+            )}
 
+            {!isMobile && (
             <div className="accounts-section-heading">
                 <div>
                     <div className="dashboard-section-kicker">Goals overview</div>
@@ -244,6 +252,7 @@ export default function SavingsGoals() {
                     Add goal <ArrowRight size={14} />
                 </button>
             </div>
+            )}
 
             {goals.length > 0 ? (
                 <div className="goals-planning-grid">

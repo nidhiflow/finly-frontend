@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Edit3, Trash2, ChevronLeft, ChevronRight, Sparkles, AlertTriangle, AlertOctagon, Wallet, Target, ArrowRight, TrendingDown } from 'lucide-react';
 import { budgetsAPI, categoriesAPI, aiAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { getBudgetAlerts } from '../utils/budgetAlerts';
 
 export default function Budget() {
@@ -24,6 +25,7 @@ export default function Budget() {
         }
     });
     const { addToast, formatCurrency } = useApp();
+    const isMobile = useIsMobile();
 
     // Month navigation
     const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -143,6 +145,13 @@ export default function Budget() {
 
     return (
         <div className="fade-in page-stack budget-page">
+            {isMobile ? (
+                <div className="mv2-month-nav">
+                    <button className="mv2-month-arrow" onClick={prevMonth}><ChevronLeft size={20} /></button>
+                    <button className="mv2-month-label" onClick={() => setCurrentMonth(new Date())}>{monthLabel}</button>
+                    <button className="mv2-month-arrow" onClick={nextMonth}><ChevronRight size={20} /></button>
+                </div>
+            ) : (
             <div className="card page-toolbar-card">
                 <div className="page-toolbar-header">
                     <div>
@@ -167,6 +176,7 @@ export default function Budget() {
                     The selected month changes the spending review window. Saved budgets stay tied to the category and period you choose.
                 </div>
             </div>
+            )}
 
             {/* Budget Alerts */}
             {budgetAlerts?.hasAlerts && showBudgetAlerts && (
@@ -255,6 +265,7 @@ export default function Budget() {
                 </div>
             </div>
 
+            {!isMobile && (
             <div className="dashboard-planner-grid">
                 {plannerCards.map((card) => {
                     const Icon = card.icon;
@@ -270,6 +281,7 @@ export default function Budget() {
                     );
                 })}
             </div>
+            )}
 
             <div className="card page-toolbar-card" style={{ padding: 16 }}>
                 <div className="page-toolbar-header">

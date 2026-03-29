@@ -405,6 +405,7 @@ export default function AddTransaction() {
     return (
         <>
         <div className="fade-in page-stack add-transaction-page">
+            {!isMobile && (
             <div className="card page-toolbar-card">
                 <div className="page-toolbar-header">
                     <div>
@@ -421,6 +422,7 @@ export default function AddTransaction() {
                     </div>
                 </div>
             </div>
+            )}
 
             {/* Type Tabs */}
             <div className="tabs">
