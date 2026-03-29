@@ -6,6 +6,7 @@ import { settingsAPI, authAPI, exportAPI, gdriveAPI } from '../services/api';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { saveTextFile } from '../utils/fileDownloads';
 import { getAppScheme, isNativeApp, openExternalUrl } from '../utils/native';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export default function Settings() {
     const { user, logout, updateUser } = useAuth();
@@ -309,10 +310,13 @@ export default function Settings() {
         { code: 'CAD', symbol: 'C$' },
     ];
 
+    const isMobile = useIsMobile();
+
     if (loading) return <div className="loading-spinner" />;
 
     return (
         <div className="fade-in page-stack settings-page" style={{ maxWidth: 760 }}>
+            {!isMobile && (
             <div className="card page-toolbar-card">
                 <div className="page-toolbar-header">
                     <div>
@@ -322,6 +326,7 @@ export default function Settings() {
                     </div>
                 </div>
             </div>
+            )}
             {/* User Info */}
             <div className="card settings-profile-card" style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{

@@ -43,7 +43,6 @@ export default function Dashboard() {
         }
     });
     const [loading, setLoading] = useState(true);
-    const [mobileInsightsOpen, setMobileInsightsOpen] = useState(true);
     const { addToast, formatCurrency } = useApp();
     const navigate = useNavigate();
 

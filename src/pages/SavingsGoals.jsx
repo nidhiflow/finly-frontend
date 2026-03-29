@@ -15,6 +15,7 @@ export default function SavingsGoals() {
     const [categories, setCategories] = useState([]);
     const [accounts, setAccounts] = useState([]);
     const { addToast, formatCurrency } = useApp();
+    const isMobile = useIsMobile();
 
     useEffect(() => {
         loadGoals();
@@ -177,8 +178,6 @@ export default function SavingsGoals() {
             tone: topGoal?.pct >= 80 ? 'positive' : 'neutral',
         },
     ];
-
-    const isMobile = useIsMobile();
 
     return (
         <div className="fade-in page-stack goals-page">

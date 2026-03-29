@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { statsAPI, transactionsAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export default function Calendar() {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function Calendar() {
     const [dayTransactions, setDayTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const { addToast, formatCurrency } = useApp();
+    const isMobile = useIsMobile();
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1;
@@ -53,6 +55,13 @@ export default function Calendar() {
 
     return (
         <div className="fade-in page-stack calendar-page">
+            {isMobile ? (
+                <div className="mv2-month-nav">
+                    <button className="mv2-month-arrow" onClick={prevMonth}><ChevronLeft size={20} /></button>
+                    <button className="mv2-month-label" onClick={() => setCurrentDate(new Date())}>{monthName}</button>
+                    <button className="mv2-month-arrow" onClick={nextMonth}><ChevronRight size={20} /></button>
+                </div>
+            ) : (
             <div className="card page-toolbar-card">
                 <div className="page-toolbar-header">
                     <div>
@@ -70,6 +79,7 @@ export default function Calendar() {
                     </div>
                 </div>
             </div>
+            )}
 
             <div className="grid-2">
                 {/* Calendar Grid */}

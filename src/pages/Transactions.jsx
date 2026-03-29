@@ -29,7 +29,7 @@ export default function Transactions() {
 
     const [filters, setFilters] = useState({ type: '', categoryId: '', accountId: '', search: '', startDate: '', endDate: '' });
     const [showFilters, setShowFilters] = useState(false);
-    const [mobilePanel, setMobilePanel] = useState('');
+    const [mobilePanel, _setMobilePanel] = useState('');
     const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
     const [bookmarkedTransactions, setBookmarkedTransactions] = useState([]);
     const [upcomingRecurring, setUpcomingRecurring] = useState([]);
