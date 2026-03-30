@@ -5153,13 +5153,13 @@ textarea.input {
   }
 
   .transactions-page--mobile-ledger .tx-list {
-    gap: 10px;
+    gap: 8px;
   }
 
   .transactions-page--mobile-ledger .tx-item {
     margin-bottom: 0;
-    border-radius: 18px;
-    padding: 14px 16px;
+    border-radius: 16px;
+    padding: 10px 12px;
     background: color-mix(in srgb, var(--bg-card) 72%, transparent);
     backdrop-filter: blur(20px) saturate(1.2);
     -webkit-backdrop-filter: blur(20px) saturate(1.2);
@@ -5167,6 +5167,7 @@ textarea.input {
     box-shadow:
       0 4px 24px color-mix(in srgb, #000 12%, transparent),
       inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
+    overflow: visible;
   }
 
   body.theme-light .transactions-page--mobile-ledger .tx-item {
@@ -7938,62 +7939,221 @@ body.theme-light .bank-logo-tile {
     justify-content: space-between !important;
   }
 
-  /* ===== CHARTS/REPORTS: reduce scrolling ===== */
+  /* ===== CHARTS/REPORTS: premium mobile redesign ===== */
+
+  /* Hide verbose toolbar heading */
   .charts-page .card.page-toolbar-card {
-    padding: 10px 12px !important;
+    display: none !important;
   }
 
-  .charts-page .page-toolbar-header {
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-  }
-
-  .charts-page .page-toolbar-actions {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .charts-page .page-toolbar-actions .btn {
-    flex: 1;
-    justify-content: center;
-    font-size: 11px;
-    padding: 6px 8px;
-    min-height: 32px;
-  }
-
-  /* Charts filter bar compact */
-  .charts-page .filter-bar {
+  /* Charts container: remove gaps */
+  .charts-page.page-stack {
     gap: 6px !important;
   }
 
-  .charts-page .filter-bar .input-group {
-    margin-bottom: 4px;
+  /* Mobile toolbar (month nav, report tabs) */
+  .charts-page .charts-toolbar {
+    padding: 0 !important;
+    gap: 6px;
   }
 
-  .charts-page .filter-bar .input-label {
-    font-size: 11px;
+  .charts-page .charts-toolbar-row-1 {
+    padding: 0;
+    gap: 4px;
   }
 
-  .charts-page .filter-bar .input {
-    padding: 6px 8px;
-    font-size: 13px;
-    min-height: 32px;
+  /* Report type pills: scrollable row */
+  .charts-page .charts-report-nav {
+    gap: 0;
   }
 
-  /* Chart card containers: compact */
+  .charts-page .charts-report-nav button {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    border-radius: 20px;
+  }
+
+  /* Month navigation: tight */
+  .charts-page .dashboard-date-nav {
+    gap: 4px;
+  }
+
+  .charts-page .dashboard-date-nav .month-nav-label {
+    font-size: 13px !important;
+    min-width: 120px !important;
+  }
+
+  .charts-page .dashboard-toolbar-actions {
+    margin-top: 0;
+  }
+
+  .charts-page .dashboard-filter-switch {
+    gap: 3px;
+  }
+
+  .charts-page .dashboard-filter-switch .btn {
+    padding: 4px 8px;
+    font-size: 11px !important;
+  }
+
+  /* Mobile filter + AI buttons */
+  .charts-mobile-toolbar-actions {
+    gap: 6px !important;
+  }
+
+  .charts-mobile-toolbar-actions .btn {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+
+  .charts-mobile-filter-panel {
+    padding: 8px !important;
+  }
+
+  .charts-mobile-presets {
+    gap: 4px !important;
+  }
+
+  .charts-mobile-presets .btn {
+    font-size: 11px !important;
+    padding: 5px 8px !important;
+  }
+
+  .charts-mobile-secondary-row {
+    gap: 4px !important;
+    padding: 0 !important;
+  }
+
+  /* Summary hero cards: compact */
+  .charts-report-hero {
+    gap: 8px !important;
+  }
+
+  .charts-page .hero-panel {
+    padding: 10px 12px !important;
+  }
+
+  .charts-page .hero-panel-head {
+    gap: 8px;
+  }
+
+  .charts-page .hero-panel .dashboard-section-kicker {
+    font-size: 10px;
+    display: none;
+  }
+
+  .charts-page .hero-panel-title {
+    font-size: 15px !important;
+  }
+
+  .charts-page .hero-panel-value {
+    font-size: 22px !important;
+  }
+
+  .charts-page .hero-panel-secondary {
+    font-size: 12px;
+  }
+
+  /* Income / Expense summary tabs */
+  .charts-page .charts-report-panel {
+    border-radius: 14px;
+  }
+
+  /* Pie/Donut charts: compact */
+  .charts-page .recharts-wrapper {
+    margin: 0 auto;
+  }
+
+  /* Chart cards: tight */
   .charts-page .card {
-    padding: 10px !important;
+    padding: 8px 10px !important;
+    border-radius: 14px;
   }
 
   .charts-page .card-header {
-    padding: 8px 10px 4px;
+    padding: 6px 8px 4px;
   }
 
   .charts-page .card-title {
-    font-size: 14px;
+    font-size: 13px;
+  }
+
+  /* Category breakdown list: compact like reference */
+  .charts-page .charts-category-list,
+  .charts-page .category-chart-list {
+    gap: 0 !important;
+  }
+
+  .charts-page .charts-category-row,
+  .charts-page .category-chart-row {
+    padding: 8px 10px !important;
+    gap: 8px;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  }
+
+  .charts-page .charts-category-row:last-child,
+  .charts-page .category-chart-row:last-child {
+    border-bottom: none;
+  }
+
+  .charts-page .category-pct-badge {
+    font-size: 11px !important;
+    padding: 2px 6px !important;
+    min-width: 36px;
+    text-align: center;
+    border-radius: 6px;
+  }
+
+  .charts-page .charts-category-name,
+  .charts-page .category-chart-name {
+    font-size: 13px;
+  }
+
+  .charts-page .charts-category-amount,
+  .charts-page .category-chart-amount {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* AI Summary card: compact */
+  .charts-page .charts-ai-panel {
+    padding: 10px 12px !important;
+  }
+
+  .charts-page .charts-ai-panel p {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  /* Cash flow breakdown */
+  .charts-page .cashflow-breakdown {
+    gap: 6px;
+  }
+
+  .charts-page .cashflow-row {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  /* Trend chart: reduce height */
+  .charts-page .charts-trend-card .recharts-responsive-container {
+    max-height: 180px;
+  }
+
+  /* Hide verbose notes */
+  .charts-page .hero-panel-note,
+  .charts-page .charts-section-note {
+    display: none;
+  }
+
+  /* Subcategory chart list */
+  .charts-page .subcategory-list {
+    gap: 2px;
+  }
+
+  .charts-page .subcategory-row {
+    padding: 6px 8px;
+    font-size: 12px;
   }
 
   /* ===== SETTINGS: compact ===== */
