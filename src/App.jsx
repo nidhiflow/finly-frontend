@@ -843,6 +843,7 @@ function AppLayout() {
   ];
 
   const secondaryNavItems = [
+    { path: '/budget', icon: PiggyBank, label: 'Budget' },
     { path: '/calendar', icon: CalendarDays, label: 'Calendar' },
     { path: '/ai-agent', icon: Sparkles, label: 'AI Agent' },
     { path: '/goals', icon: Target, label: 'Goals' },
