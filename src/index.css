@@ -4211,13 +4211,21 @@ textarea.input {
   }
 
   .transactions-page .tx-item-actions {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: flex-end;
-    gap: 6px;
+    gap: 2px;
+    flex-shrink: 0;
   }
 
   .transactions-page .tx-item-amount-block {
-    min-width: 100px;
+    min-width: 70px;
+  }
+
+  .transactions-page .tx-item-actions .btn-icon {
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0;
+    flex-shrink: 0;
   }
 
   .settings-page .settings-item {

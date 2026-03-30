@@ -143,6 +143,8 @@ export const accountsAPI = {
     create: (data) => request('/accounts', { method: 'POST', body: JSON.stringify(data) }),
     update: (id, data) => request(`/accounts/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id) => request(`/accounts/${id}`, { method: 'DELETE' }),
+    forceDelete: (id) => request(`/accounts/${id}?force=true`, { method: 'DELETE' }),
+    linkedTransactions: (id) => request(`/accounts/${id}/linked-transactions`),
 };
 
 // Budgets

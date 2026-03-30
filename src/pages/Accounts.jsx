@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit3, Trash2, ChevronDown, ChevronRight, Wallet, TrendingUp, TrendingDown, ArrowRight, Landmark, PiggyBank, Search } from 'lucide-react';
+import { Plus, Edit3, Trash2, ChevronDown, ChevronRight, Wallet, TrendingUp, TrendingDown, ArrowRight, Landmark, PiggyBank, Search, AlertTriangle } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { accountsAPI, statsAPI } from '../services/api';
 import { useApp } from '../context/AppContext';
@@ -55,6 +55,7 @@ export default function Accounts() {
     const [showAddBankInput, setShowAddBankInput] = useState(false);
     const [, setCustomBankTick] = useState(0);
     const [trendData, setTrendData] = useState([]);
+    const [deleteConfirm, setDeleteConfirm] = useState(null);
     const { addToast, formatCurrency } = useApp();
     const isMobile = useIsMobile();
 
@@ -169,11 +170,28 @@ export default function Accounts() {
         } catch (err) { addToast(err.message, 'error'); }
     };
 
-    const handleDelete = async (id) => {
-        if (!confirm('Delete this account?')) return;
+    const handleDelete = async (id, e) => {
+        if (e) e.stopPropagation();
         try {
-            await accountsAPI.delete(id);
-            addToast('Account deleted');
+            const { count } = await accountsAPI.linkedTransactions(id);
+            const accName = accounts.find(a => a.id === id)?.name || 'this account';
+            setDeleteConfirm({ id, name: accName, txCount: count });
+        } catch {
+            setDeleteConfirm({ id, name: 'this account', txCount: 0 });
+        }
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteConfirm) return;
+        try {
+            if (deleteConfirm.txCount > 0) {
+                await accountsAPI.forceDelete(deleteConfirm.id);
+                addToast(`Account and ${deleteConfirm.txCount} transaction(s) deleted`);
+            } else {
+                await accountsAPI.delete(deleteConfirm.id);
+                addToast('Account deleted');
+            }
+            setDeleteConfirm(null);
             loadAccounts();
         } catch (err) { addToast(err.message, 'error'); }
     };
@@ -311,8 +329,9 @@ export default function Accounts() {
                                     const balanceValue = parseFloat(acc.balance || 0) || 0;
                                     const typeLabel = accountTypes.find(t => t.value === acc.type)?.label || acc.type.replace('_', ' ');
                                     return (
-                                        <button key={acc.id} className="mv2-tx-row" onClick={() => openEdit(acc)}
-                                            style={{ animationDelay: `${i * 0.04}s` }}>
+                                        <div key={acc.id} className="mv2-tx-row"
+                                            style={{ animationDelay: `${i * 0.04}s`, cursor: 'pointer' }}
+                                            onClick={() => openEdit(acc)}>
                                             <AccountIcon icon={acc.icon} size={40} />
                                             <div className="mv2-tx-info">
                                                 <div className="mv2-tx-name">{acc.name}</div>
@@ -321,7 +340,11 @@ export default function Accounts() {
                                             <div className={`mv2-tx-amount ${balanceValue >= 0 ? 'income' : 'expense'}`}>
                                                 {formatCurrency(acc.balance)}
                                             </div>
-                                        </button>
+                                            <button className="btn btn-ghost btn-icon btn-sm" onClick={(e) => handleDelete(acc.id, e)}
+                                                style={{ color: 'var(--danger)', width: 32, height: 32, flexShrink: 0 }}>
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
                                     );
                                 })}
                             </div>
@@ -631,6 +654,40 @@ export default function Accounts() {
                                 <button type="submit" className="btn btn-primary">{editingSub ? 'Update' : 'Add'}</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteConfirm && (
+                <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
+                    <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 420 }}>
+                        <div className="modal-header" style={{ textAlign: 'center', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                            <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <AlertTriangle size={28} color="var(--danger)" />
+                            </div>
+                            <h3 style={{ margin: 0 }}>Delete "{deleteConfirm.name}"?</h3>
+                        </div>
+                        <div style={{ padding: '0 20px 16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.5 }}>
+                            {deleteConfirm.txCount > 0 ? (
+                                <>
+                                    <p style={{ margin: '0 0 8px' }}>
+                                        This account has <strong style={{ color: 'var(--danger)' }}>{deleteConfirm.txCount} transaction{deleteConfirm.txCount !== 1 ? 's' : ''}</strong> linked to it.
+                                    </p>
+                                    <p style={{ margin: 0, fontSize: 13 }}>
+                                        Deleting this account will also permanently delete all linked transactions. You can edit individual transactions to move them to another account first.
+                                    </p>
+                                </>
+                            ) : (
+                                <p style={{ margin: 0 }}>This account has no linked transactions. It will be permanently deleted.</p>
+                            )}
+                        </div>
+                        <div className="modal-footer" style={{ justifyContent: 'center', gap: 10 }}>
+                            <button className="btn btn-secondary" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+                            <button className="btn" style={{ background: 'var(--danger)', color: '#fff' }} onClick={confirmDelete}>
+                                <Trash2 size={14} /> Delete{deleteConfirm.txCount > 0 ? ' Everything' : ''}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
