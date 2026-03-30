@@ -4207,25 +4207,69 @@ textarea.input {
   }
 
   .transactions-page .tx-item {
-    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .transactions-page .tx-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .transactions-page .tx-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .transactions-page .tx-category {
+    font-size: 13px;
+  }
+
+  .transactions-page .tx-note {
+    font-size: 12px;
   }
 
   .transactions-page .tx-item-actions {
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    gap: 2px;
-    flex-shrink: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding-top: 4px;
+    border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+    margin-top: 2px;
   }
 
   .transactions-page .tx-item-amount-block {
-    min-width: 70px;
+    min-width: 0;
+    flex: 1;
   }
 
-  .transactions-page .tx-item-actions .btn-icon {
-    width: 28px !important;
-    height: 28px !important;
+  .transactions-page .tx-item-amount-block .tx-amount {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .transactions-page .tx-item-amount-block .tx-account {
+    font-size: 11px;
+  }
+
+  .transactions-page .tx-item-actions .btn-icon,
+  .transactions-page .tx-item-actions .btn-sm {
+    width: 32px !important;
+    height: 32px !important;
     padding: 0;
     flex-shrink: 0;
+  }
+
+  .transactions-page .tx-item-actions .bookmark-toggle {
+    order: 2;
+  }
+
+  .transactions-page .tx-item-actions .btn-sm:last-child {
+    order: 3;
   }
 
   .settings-page .settings-item {
