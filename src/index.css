@@ -4628,6 +4628,7 @@ textarea.input {
     white-space: normal;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -7467,4 +7468,161 @@ body.theme-light .bank-logo-tile {
   transform: scale(0.97);
   background: var(--accent-primary-light);
   border-color: var(--accent-primary);
+}
+
+/* ===== MOBILE POLISH (Phase 2) ===== */
+@media (max-width: 768px) {
+
+  /* Settings: compact profile card */
+  .settings-profile-card {
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .settings-profile-card > div:first-child {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 18px !important;
+  }
+
+  .settings-page .settings-group {
+    margin-bottom: 12px;
+  }
+
+  .settings-page .settings-item {
+    padding: 10px 0;
+  }
+
+  /* Calendar: tighter day detail card */
+  .calendar-page .grid-2 > .card:last-child .card-header {
+    padding: 12px 14px 8px;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .card-title {
+    font-size: 14px;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .tx-list {
+    gap: 0;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .tx-item {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .tx-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .empty-state {
+    padding: 14px !important;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .empty-state p {
+    font-size: 13px;
+  }
+
+  /* Budget: tighter mobile hero */
+  .budget-page .budget-overview-hero {
+    padding: 14px !important;
+  }
+
+  .budget-page .budget-overview-value {
+    font-size: 24px !important;
+  }
+
+  .budget-page .budget-overview-score {
+    font-size: 28px;
+  }
+
+  .budget-page .budget-overview-track {
+    margin-top: 8px;
+  }
+
+  .budget-page .mini-metric {
+    text-align: center;
+  }
+
+  .budget-page .mini-metric-label {
+    font-size: 11px;
+  }
+
+  /* SavingsGoals: tighter hero */
+  .goals-page .goals-overview-hero {
+    padding: 14px !important;
+  }
+
+  .goals-page .budget-overview-value {
+    font-size: 24px !important;
+  }
+
+  .goals-page .budget-overview-score {
+    font-size: 28px;
+  }
+
+  /* Goals planning grid */
+  .goals-planning-grid {
+    gap: 12px;
+  }
+
+  /* Budget suggestions card mobile */
+  .budget-suggestions-card {
+    padding: 12px !important;
+  }
+
+  /* Budget category toolbar compact */
+  .budget-page > .card.page-toolbar-card .page-toolbar-subtitle {
+    font-size: 14px;
+  }
+
+  .budget-page > .card.page-toolbar-card .dashboard-section-note {
+    display: none;
+  }
+
+  /* Filter Sheet slide-up animation */
+  .mv2-filter-sheet {
+    animation: sheetSlideUp 0.3s ease;
+  }
+
+  @keyframes sheetSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Add Transaction: tighter form on mobile */
+  .add-transaction-page .tabs {
+    margin: 0;
+  }
+
+  .add-transaction-page .form-section-card {
+    padding: 12px !important;
+  }
+
+  .add-transaction-page .form-section-card .card-title {
+    font-size: 14px;
+  }
+
+  /* Charts page mobile: hide verbose heading/note text */
+  .charts-page .charts-toolbar-heading .dashboard-section-kicker,
+  .charts-page .charts-toolbar-heading .dashboard-section-note {
+    display: none;
+  }
+
+  .charts-page .charts-toolbar-heading .dashboard-section-title {
+    font-size: 16px;
+  }
+
+  /* Accounts page: compact card list */
+  .accounts-page .accounts-card-list {
+    gap: 10px;
+  }
 }
