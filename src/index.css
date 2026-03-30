@@ -7633,4 +7633,434 @@ body.theme-light .bank-logo-tile {
   .accounts-page .accounts-card-list {
     gap: 10px;
   }
+
+  /* ===== GLOBAL MOBILE: reduce scrolling ===== */
+
+  /* Tighter page stack */
+  .page-stack {
+    gap: 10px !important;
+  }
+
+  /* All cards: tighter padding */
+  .card {
+    border-radius: 14px;
+  }
+
+  /* ===== ADD TRANSACTION: compact mobile form ===== */
+  .add-transaction-page .add-transaction-mobile-stack {
+    gap: 10px;
+  }
+
+  .add-transaction-page .form-section-card {
+    padding: 10px 12px !important;
+  }
+
+  .add-transaction-page .input-group {
+    margin-bottom: 6px;
+  }
+
+  .add-transaction-page .input-label {
+    font-size: 11px;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+  }
+
+  .add-transaction-page .input,
+  .add-transaction-page .input[type="date"],
+  .add-transaction-page select.input {
+    padding: 8px 10px;
+    font-size: 14px;
+    min-height: 38px;
+  }
+
+  .add-transaction-page textarea.input {
+    padding: 8px 10px;
+    font-size: 14px;
+    max-height: 60px;
+  }
+
+  /* Compact amount input */
+  .add-transaction-page .add-transaction-primary-card .input[style*="font-size: 24px"] {
+    font-size: 20px !important;
+  }
+
+  /* Category grid: 4 columns, tighter on mobile */
+  .add-transaction-page .add-transaction-mobile-stack .category-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 4px;
+  }
+
+  .add-transaction-page .category-item {
+    padding: 6px 2px;
+  }
+
+  .add-transaction-page .category-item-icon {
+    font-size: 22px;
+  }
+
+  .add-transaction-page .category-item-name {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  /* Receipt scan buttons: horizontal */
+  .add-transaction-page .add-transaction-upload-actions {
+    flex-direction: row !important;
+    gap: 6px;
+  }
+
+  .add-transaction-page .add-transaction-upload-actions .btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Sticky save bar: compact */
+  .add-transaction-sticky-actions {
+    padding: 8px 12px !important;
+    gap: 8px;
+  }
+
+  .add-transaction-sticky-actions .btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  /* Tabs: compact */
+  .add-transaction-page .tabs {
+    margin: 0 !important;
+    gap: 0;
+  }
+
+  .add-transaction-page .tabs .tab {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* ===== BUDGET PAGE: mobile visibility fix ===== */
+
+  /* Hero card compact */
+  .budget-page .budget-overview-hero {
+    padding: 12px 14px !important;
+  }
+
+  .budget-page .budget-overview-head {
+    gap: 8px;
+  }
+
+  .budget-page .dashboard-section-kicker {
+    font-size: 10px;
+  }
+
+  .budget-page .budget-overview-value {
+    font-size: 22px !important;
+  }
+
+  .budget-page .budget-overview-value span {
+    font-size: 13px;
+  }
+
+  .budget-page .budget-overview-note {
+    font-size: 12px;
+    line-height: 1.3;
+    margin-top: 2px;
+  }
+
+  .budget-page .budget-overview-score {
+    font-size: 26px;
+  }
+
+  .budget-page .budget-overview-track {
+    margin-top: 6px;
+  }
+
+  .budget-page .budget-overview-metrics {
+    margin-top: 8px;
+    gap: 8px;
+  }
+
+  .budget-page .mini-metric {
+    text-align: center;
+  }
+
+  .budget-page .mini-metric-label {
+    font-size: 10px;
+  }
+
+  .budget-page .mini-metric strong {
+    font-size: 14px;
+  }
+
+  /* Category budgets toolbar: compact */
+  .budget-page .page-toolbar-card {
+    padding: 10px 12px !important;
+  }
+
+  .budget-page .page-toolbar-header {
+    gap: 8px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .budget-page .page-toolbar-subtitle {
+    font-size: 14px;
+  }
+
+  .budget-page .dashboard-section-note {
+    display: none;
+  }
+
+  .budget-page .page-toolbar-header > div:last-child {
+    display: flex;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .budget-page .page-toolbar-header > div:last-child .btn {
+    flex: 1;
+    justify-content: center;
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  /* Budget items: compact cards */
+  .budget-planning-grid {
+    gap: 8px !important;
+  }
+
+  .budget-planning-card {
+    padding: 10px 12px !important;
+  }
+
+  .budget-planning-card .budget-header {
+    gap: 6px;
+  }
+
+  .budget-planning-card .budget-info span {
+    font-size: 18px !important;
+  }
+
+  .budget-planning-card .budget-info div > div:first-child {
+    font-size: 13px !important;
+  }
+
+  .budget-planning-card .budget-info div > div:last-child {
+    font-size: 10px !important;
+  }
+
+  .budget-planning-card .budget-header-actions {
+    gap: 4px !important;
+  }
+
+  .budget-planning-card .budget-header-actions span {
+    font-size: 12px !important;
+  }
+
+  .budget-planning-card .budget-amounts {
+    margin-top: 4px;
+  }
+
+  .budget-planning-card .budget-amounts span {
+    font-size: 11px !important;
+  }
+
+  .budget-planning-card .budget-planning-note {
+    font-size: 11px;
+    line-height: 1.3;
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+
+  /* Budget alerts: compact */
+  .budget-page > .card:has(.budget-alerts) {
+    padding: 8px 12px !important;
+  }
+
+  /* Budget suggestions: compact */
+  .budget-suggestions-card {
+    padding: 10px 12px !important;
+  }
+
+  .budget-guidance-row {
+    padding: 8px 10px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .budget-guidance-actions {
+    width: 100%;
+    justify-content: space-between !important;
+  }
+
+  /* ===== CHARTS/REPORTS: reduce scrolling ===== */
+  .charts-page .card.page-toolbar-card {
+    padding: 10px 12px !important;
+  }
+
+  .charts-page .page-toolbar-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .charts-page .page-toolbar-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .charts-page .page-toolbar-actions .btn {
+    flex: 1;
+    justify-content: center;
+    font-size: 11px;
+    padding: 6px 8px;
+    min-height: 32px;
+  }
+
+  /* Charts filter bar compact */
+  .charts-page .filter-bar {
+    gap: 6px !important;
+  }
+
+  .charts-page .filter-bar .input-group {
+    margin-bottom: 4px;
+  }
+
+  .charts-page .filter-bar .input-label {
+    font-size: 11px;
+  }
+
+  .charts-page .filter-bar .input {
+    padding: 6px 8px;
+    font-size: 13px;
+    min-height: 32px;
+  }
+
+  /* Chart card containers: compact */
+  .charts-page .card {
+    padding: 10px !important;
+  }
+
+  .charts-page .card-header {
+    padding: 8px 10px 4px;
+  }
+
+  .charts-page .card-title {
+    font-size: 14px;
+  }
+
+  /* ===== SETTINGS: compact ===== */
+  .settings-page .page-stack {
+    gap: 8px !important;
+  }
+
+  .settings-page .settings-group {
+    margin-bottom: 8px;
+  }
+
+  .settings-page .settings-group-title {
+    font-size: 11px;
+    margin-bottom: 4px;
+    padding: 0 2px;
+  }
+
+  .settings-page .settings-item {
+    padding: 8px 0 !important;
+    gap: 10px !important;
+  }
+
+  .settings-page .settings-item-info p {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .settings-page .settings-item-info h4 {
+    font-size: 13px;
+  }
+
+  /* Settings cards */
+  .settings-page .card {
+    padding: 10px 12px !important;
+  }
+
+  /* ===== CALENDAR: tighter ===== */
+  .calendar-page .grid-2 > .card:first-child {
+    padding: 6px !important;
+    overflow: hidden;
+  }
+
+  .calendar-page .grid-2 > .card:last-child {
+    padding: 8px 10px !important;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .card-header {
+    padding: 8px 10px 4px;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .card-title {
+    font-size: 13px;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .tx-item {
+    padding: 6px 8px;
+    gap: 8px;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .tx-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .empty-state {
+    padding: 10px !important;
+  }
+
+  .calendar-page .grid-2 > .card:last-child .empty-state p {
+    font-size: 12px;
+  }
+
+  /* ===== SAVINGS GOALS: compact ===== */
+  .goals-page .goals-overview-hero {
+    padding: 12px 14px !important;
+  }
+
+  .goals-page .budget-overview-value {
+    font-size: 22px !important;
+  }
+
+  .goals-page .budget-overview-score {
+    font-size: 26px;
+  }
+
+  .goals-page .goal-card {
+    padding: 10px 12px;
+  }
+
+  .goals-planning-grid {
+    gap: 8px !important;
+  }
+
+  /* ===== EMPTY STATES: compact ===== */
+  .empty-state {
+    padding: 20px 16px !important;
+  }
+
+  .empty-state h3 {
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .empty-state p {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .empty-state-icon {
+    font-size: 32px !important;
+    margin-bottom: 6px !important;
+  }
 }
